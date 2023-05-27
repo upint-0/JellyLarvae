@@ -270,11 +270,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29401653b7ef53438d0261988da02a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _MapSize: {x: 1, y: 1}
-  _ComputeShaderJellyMask: {fileID: 0}
-  _JellyRenderer: {fileID: 2100000, guid: 133cfb50be3455744912469c234ace85, type: 2}
+  _MapSize: {x: 50, y: 50}
+  _ComputeShaderJellyMask: {fileID: 7200000, guid: 7f875aa308d9a9945a50ade6c74abdd3, type: 3}
+  _JellyRenderer: {fileID: 2116256680}
   _TextureQuality: 1
-  _JellyMask: {fileID: 0}
+  _JellyMask: {fileID: 8400000, guid: c97bd54365246d8418c2a50d85b14f8b, type: 2}
 --- !u!4 &1246214786
 Transform:
   m_ObjectHideFlags: 0
