@@ -2,8 +2,26 @@
 
 RWTexture2D<float4> _JellyMask;
 
+float4 _BrushSettings;
+float4 _CanvasSettings;
+float2 _TextureSize;
+
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    _JellyMask[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+    float2 pos = id.xy;
+
+    float2 posWS = (pos * _CanvasSettings.zw) +_CanvasSettings.xy;
+    float2 mousePos = (_BrushSettings.xy - _CanvasSettings.xy) / (_CanvasSettings.zw);
+    
+    if(_BrushSettings.w > 0)
+    {
+        float distance = length(pos -mousePos ) / _BrushSettings.z;
+
+        _JellyMask[id.xy] = float4(distance,0,0,1); 
+    }else
+    {
+        _JellyMask[id.xy] = float4(mousePos.x,mousePos.y,0,1);
+    }
+
 }

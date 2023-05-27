@@ -270,7 +270,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29401653b7ef53438d0261988da02a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UseSpriteScaleForSize: 1
   _MapSize: {x: 50, y: 50}
+  _BrushSize: 8
   _ComputeShaderJellyMask: {fileID: 7200000, guid: 7f875aa308d9a9945a50ade6c74abdd3, type: 3}
   _JellyRenderer: {fileID: 2116256680}
   _TextureQuality: 1
@@ -367,7 +369,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116256679}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.735989, y: -19.699543, z: 0}
+  m_LocalPosition: {x: 0.87, y: 1.08, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
