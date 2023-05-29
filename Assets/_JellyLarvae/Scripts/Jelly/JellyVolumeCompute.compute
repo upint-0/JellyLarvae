@@ -2,26 +2,42 @@
 
 RWTexture2D<float4> _JellyMask;
 
+struct pointInfos
+{
+    float jellyValue;
+};
+RWStructuredBuffer<pointInfos> _PointsInfos;
+
 float4 _BrushSettings;
 float4 _CanvasSettings;
 float2 _TextureSize;
 
+float2 playerPos;
+
+#define DETECT_RADIUS 0.5
+
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    float2 pos = id.xy;
+    float2 posWS = ((id.xy / _TextureSize) * _CanvasSettings.zw) + _CanvasSettings.xy - (_CanvasSettings.zw / 2);
 
-    float2 posWS = (pos * _CanvasSettings.zw) +_CanvasSettings.xy;
-    float2 mousePos = (_BrushSettings.xy - _CanvasSettings.xy) / (_CanvasSettings.zw);
-    
+    float4 value = _JellyMask[id.xy];
     if(_BrushSettings.w > 0)
     {
-        float distance = length(pos -mousePos ) / _BrushSettings.z;
-
-        _JellyMask[id.xy] = float4(distance,0,0,1); 
-    }else
+        float distance = 1 - length(posWS -_BrushSettings.xy  ) / _BrushSettings.z;
+        value.x = max(value.x, distance);
+    } else
     {
-        _JellyMask[id.xy] = float4(mousePos.x,mousePos.y,0,1);
+        float distanceToPlayer = 1 - length(posWS - _BrushSettings.xy) / _BrushSettings.z;
+        if(distanceToPlayer > DETECT_RADIUS)
+        {
+            _PointsInfos[0].jellyValue = value.x;
+        }
     }
+
+
+    
+    value.w = 1;
+    _JellyMask[id.xy] = value; 
 
 }
