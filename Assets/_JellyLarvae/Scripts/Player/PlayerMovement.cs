@@ -29,6 +29,15 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         HandleDash();
+
+        if ( DetectJelly() )
+        {
+            EnterJelly();
+        }
+        else
+        {
+            ExitJelly();
+        }
     }
 
     private void FixedUpdate()
@@ -41,15 +50,6 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler( 0.0f, 0.0f, z_rotation );
 
         HandleMovements( distance_to_mouse );
-
-        if ( DetectJelly() )
-        {
-            EnterJelly();
-        }
-        else
-        {
-            ExitJelly();
-        }
     }
 
     private void EnterJelly()

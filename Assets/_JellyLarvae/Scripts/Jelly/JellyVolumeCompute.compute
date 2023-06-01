@@ -30,7 +30,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     }
     else
     {
-        float distanceToPlayer = length(playerPos.xy - posWS);
+        //float distanceToPlayer = length(playerPos.xy - posWS);
+        float distanceToPlayer = 1- length(posWS - playerPos.xy);
         
         if (distanceToPlayer > DETECT_RADIUS)
         {
