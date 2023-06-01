@@ -109,9 +109,11 @@ public class JellyRenderer : MonoBehaviour
         
         _MaterialPropertyBlock.SetTexture("_MainTex", _JellyMask);
 
-        if(_ReadValueAtMousePosition)GetJellyValueAtPosition(mousePosWS);
-
-        _JellyValueDebug.text = "Jelly Value : " + _PlayerPosInfos.jellyValue;
+        if ( _ReadValueAtMousePosition )
+        {
+            GetJellyValueAtPosition(mousePosWS);
+            _JellyValueDebug.text = "Jelly Value : " + _PlayerPosInfos.jellyValue;
+        } 
     }
 
     public float GetJellyValueAtPosition(Vector2 position)
@@ -140,7 +142,7 @@ public class JellyRenderer : MonoBehaviour
 
 
 
-        bool isDrawing = Input.GetMouseButton(0);
+        bool isDrawing = Input.GetKey(KeyCode.Space);
         Vector4 brushSettings = new Vector4(mousePosWS.x, mousePosWS.y, _BrushSize, Convert.ToSingle(isDrawing));
         
         _ComputeShaderJellyMask.SetVector("_BrushSettings", brushSettings);

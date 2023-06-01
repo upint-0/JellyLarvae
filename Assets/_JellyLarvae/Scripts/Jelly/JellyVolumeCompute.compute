@@ -16,20 +16,23 @@ float2 playerPos;
 
 #define DETECT_RADIUS 0.5
 
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
 {
     float2 posWS = ((id.xy / _TextureSize) * _CanvasSettings.zw) + _CanvasSettings.xy - (_CanvasSettings.zw / 2);
 
     float4 value = _JellyMask[id.xy];
-    if(_BrushSettings.w > 0)
+    
+    if (_BrushSettings.w > 0)
     {
-        float distance = 1 - length(posWS -_BrushSettings.xy  ) / _BrushSettings.z;
+        float distance = 1 - length(posWS - _BrushSettings.xy) / _BrushSettings.z;
         value.x = max(value.x, distance);
-    } else
+    }
+    else
     {
-        float distanceToPlayer = 1 - length(posWS - _BrushSettings.xy) / _BrushSettings.z;
-        if(distanceToPlayer > DETECT_RADIUS)
+        float distanceToPlayer = length(playerPos.xy - posWS);
+        
+        if (distanceToPlayer > DETECT_RADIUS)
         {
             _PointsInfos[0].jellyValue = value.x;
         }
@@ -38,6 +41,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     
     value.w = 1;
-    _JellyMask[id.xy] = value; 
+    _JellyMask[id.xy] = value;
 
 }
