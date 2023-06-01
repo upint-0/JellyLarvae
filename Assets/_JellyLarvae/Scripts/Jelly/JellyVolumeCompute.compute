@@ -6,6 +6,15 @@ struct pointInfos
 {
     float jellyValue;
 };
+struct PlayerInfos
+{
+    float2 position;
+    bool isEating;
+    float eatRadius;
+    float2 eatPosition;
+};
+
+StructuredBuffer<PlayerInfos> _PlayerInfos;
 RWStructuredBuffer<pointInfos> _PointsInfos;
 
 float4 _BrushSettings;
@@ -15,6 +24,7 @@ float2 _TextureSize;
 float2 playerPos;
 
 #define DETECT_RADIUS 0.5
+#define EAT_RADIUS 0
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
@@ -22,6 +32,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float2 posWS = ((id.xy / _TextureSize) * _CanvasSettings.zw) + _CanvasSettings.xy - (_CanvasSettings.zw / 2);
 
     float4 value = _JellyMask[id.xy];
+    PlayerInfos player = _PlayerInfos[0];
     
     if (_BrushSettings.w > 0)
     {
@@ -31,10 +42,18 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     else
     {
         //float distanceToPlayer = length(playerPos.xy - posWS);
-        float distanceToPlayer = 1- length(posWS - playerPos.xy);
+        float distanceToPlayer = 1- length(posWS - player.position);
         
         if (distanceToPlayer > DETECT_RADIUS)
         {
+            if(player.isEating)
+            {
+                float eatDistance = (1- length(posWS - player.eatPosition)) / player.eatRadius;
+                if(eatDistance > EAT_RADIUS)
+                {
+                    value.x = saturate(value.x - eatDistance);
+                }
+            }
             _PointsInfos[0].jellyValue = value.x;
         }
     }

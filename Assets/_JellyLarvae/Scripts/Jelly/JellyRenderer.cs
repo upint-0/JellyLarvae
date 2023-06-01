@@ -23,6 +23,7 @@ public class JellyRenderer : MonoBehaviour
     private Vector3Uint _KernelGroupeSize = new Vector3Uint();
 
     private ComputeBuffer _PointsInfosBuffer;
+    private ComputeBuffer _PlayerInfosBuffer;
     
     [Header("Texture settings")]
     [SerializeField] [Range(0.1f,10f)]private float _TextureQuality = 1f;
@@ -34,15 +35,28 @@ public class JellyRenderer : MonoBehaviour
     [Header("Debug")]
     public PointInfos _PlayerPosInfos = new PointInfos();
     public TextMeshProUGUI  _JellyValueDebug;
-    
+
+    private PlayerInfos _PlayerInfos = new PlayerInfos();
     private MaterialPropertyBlock _MaterialPropertyBlock;
 
     private const int POINT_INFOS_SIZEOF = sizeof(float);
+    private const int PLAYER_INFOS_SIZEOF = (sizeof(float) * 4) + sizeof(Single) + sizeof(float);
+    
     [Serializable]
     public struct PointInfos
     {
         public float jellyValue;
     }
+    
+    [System.Serializable]
+    public struct PlayerInfos
+    {
+        public Vector2 position;
+        public System.Single isEating;
+        public float eatRadius;
+        public Vector2 eatPosition;
+    }
+    
     
     [Button("Setup Render Texture")]
     void SetupRenderTexture()
@@ -61,6 +75,7 @@ public class JellyRenderer : MonoBehaviour
     {
         _JellyMask.Release();
         _PointsInfosBuffer.Release();
+        _PlayerInfosBuffer.Release();
     }
 
     private void Init()
@@ -84,7 +99,7 @@ public class JellyRenderer : MonoBehaviour
         _JellyRenderer.SetPropertyBlock(_MaterialPropertyBlock);
 
         _PointsInfosBuffer = new ComputeBuffer(1, POINT_INFOS_SIZEOF);
-        //_PointsInfosBuffer.SetData(_PlayerPosInfos);
+        _PlayerInfosBuffer = new ComputeBuffer(1, PLAYER_INFOS_SIZEOF);
 
         _MainKernel = _ComputeShaderJellyMask.FindKernel("CSMain");
         _ComputeShaderJellyMask.GetKernelThreadGroupSizes(_MainKernel, out _KernelGroupeSize.x,out _KernelGroupeSize.y, out _KernelGroupeSize.z);
@@ -100,7 +115,9 @@ public class JellyRenderer : MonoBehaviour
         
         Draw(mousePosWS);
         
+        _ComputeShaderJellyMask.SetBuffer(_MainKernel, "_PlayerInfos", _PlayerInfosBuffer);
         _ComputeShaderJellyMask.SetBuffer(_MainKernel, "_PointsInfos", _PointsInfosBuffer);
+        
         _ComputeShaderJellyMask.SetTexture(_MainKernel,"_JellyMask", _JellyMask);
         _ComputeShaderJellyMask.Dispatch(_MainKernel, 
             (int) (_MapSize.x / _KernelGroupeSize.x), 
@@ -111,14 +128,25 @@ public class JellyRenderer : MonoBehaviour
 
         if ( _ReadValueAtMousePosition )
         {
-            GetJellyValueAtPosition(mousePosWS);
+            GetJellyValueAtPosition(mousePosWS, false, mousePosWS, 5f);
             _JellyValueDebug.text = "Jelly Value : " + _PlayerPosInfos.jellyValue;
         } 
     }
 
-    public float GetJellyValueAtPosition(Vector2 position)
+    public float GetJellyValueAtPosition(Vector2 position, bool eat, Vector2 mouthPos, float eatRadius)
     {
         _ComputeShaderJellyMask.SetVector("playerPos", position);
+        Vector3 eatSettings = new Vector3(Convert.ToSingle(eat), mouthPos.x, mouthPos.y);
+        _ComputeShaderJellyMask.SetVector("playerPos", position);
+        
+        _PlayerInfos.position = position;
+        _PlayerInfos.isEating = Convert.ToSingle(eat);
+        _PlayerInfos.eatRadius = eatRadius;
+        _PlayerInfos.eatPosition = mouthPos;
+
+        PlayerInfos[] infos = new PlayerInfos[1];
+        infos[0] = _PlayerInfos;
+        _PlayerInfosBuffer.SetData(infos);
         
         // Read buffer data 
         PointInfos[] data = new PointInfos[1];
