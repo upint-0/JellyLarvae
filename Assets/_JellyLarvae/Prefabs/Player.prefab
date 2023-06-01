@@ -131,11 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 825a3d1b9a34b324982a752cfb920715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 200
-  StopDistance: 1
-  DashForce: 40
-  DashCoolDown: 0.5
-  DebugMode: 0
+  PlayerAttributes: {fileID: 11400000, guid: 1cc83799c5d8b7249bb2bb7493dd1f1e, type: 2}
+  Jelly: {fileID: 0}
+  DebugMode: 1
 --- !u!50 &6541772070373060955
 Rigidbody2D:
   serializedVersion: 4

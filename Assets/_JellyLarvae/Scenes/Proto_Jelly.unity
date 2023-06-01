@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 108071763}
   - component: {fileID: 108071762}
+  - component: {fileID: 108071765}
   - component: {fileID: 108071761}
   - component: {fileID: 108071764}
   m_Layer: 0
@@ -241,6 +242,21 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &108071765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108071760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1c6c360f50b6e946ab11a9b4c5fcfcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 1199768371}
+  TargetOffset: 2
+  LerpSpeed: 2.5
 --- !u!1 &997511891
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,6 +390,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1199768371 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6541772070373060957, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+  m_PrefabInstance: {fileID: 2064201175}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1246214784
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,7 +431,7 @@ MonoBehaviour:
   _JellyRenderer: {fileID: 2116256680}
   _TextureQuality: 8.08
   _JellyMask: {fileID: 8400000, guid: c97bd54365246d8418c2a50d85b14f8b, type: 2}
-  _ReadValueAtMousePosition: 0
+  _ReadValueAtMousePosition: 1
   _PlayerPosInfos:
     jellyValue: 0
   _JellyValueDebug: {fileID: 2050111921}
@@ -643,10 +664,6 @@ PrefabInstance:
       propertyPath: Jelly
       value: 
       objectReference: {fileID: 1246214785}
-    - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: DebugMode
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6541772070373060956, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: m_Name
       value: Player
