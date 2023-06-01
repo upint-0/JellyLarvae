@@ -10,20 +10,15 @@ using static UnityExtensions;
 
 public class JellyRenderer : MonoBehaviour
 {
-    [SerializeField] private bool _UseSpriteScaleForSize = false;
+    #region Variables
     [SerializeField] private Vector2Int _MapSize = Vector2Int.one;
 
     [Header("Paint")] 
     [SerializeField] private float _BrushSize = 1f;
+    
     [Header("Compute")] 
     [SerializeField] private ComputeShader _ComputeShaderJellyMask;
     [SerializeField] private SpriteRenderer _JellyRenderer;
-    private Material _MaterialInstance;
-    private int _MainKernel;
-    private Vector3Uint _KernelGroupeSize = new Vector3Uint();
-
-    private ComputeBuffer _PointsInfosBuffer;
-    private ComputeBuffer _PlayerInfosBuffer;
     
     [Header("Texture settings")]
     [SerializeField] [Range(0.1f,10f)]private float _TextureQuality = 1f;
@@ -31,23 +26,30 @@ public class JellyRenderer : MonoBehaviour
 
     [Header("Read value")]
     public bool _ReadValueAtMousePosition = false;
-    
-    [Header("Debug")]
-    public PointInfos _PlayerPosInfos = new PointInfos();
     public TextMeshProUGUI  _JellyValueDebug;
 
+    private PointInfos _PlayerPosInfos = new PointInfos();
     private PlayerInfos _PlayerInfos = new PlayerInfos();
     private MaterialPropertyBlock _MaterialPropertyBlock;
+    
+    private int _MainKernel;
+    private Vector3Uint _KernelGroupeSize = new Vector3Uint();
 
+    private ComputeBuffer _PointsInfosBuffer;
+    private ComputeBuffer _PlayerInfosBuffer;
+    
+    #endregion
+
+    #region Consts
     private const int POINT_INFOS_SIZEOF = sizeof(float);
     private const int PLAYER_INFOS_SIZEOF = (sizeof(float) * 4) + sizeof(Single) + sizeof(float);
-    
+    #endregion
+    #region Struct
     [Serializable]
     public struct PointInfos
     {
         public float jellyValue;
     }
-    
     [System.Serializable]
     public struct PlayerInfos
     {
@@ -56,7 +58,8 @@ public class JellyRenderer : MonoBehaviour
         public float eatRadius;
         public Vector2 eatPosition;
     }
-    
+    #endregion
+
     
     [Button("Setup Render Texture")]
     void SetupRenderTexture()
@@ -160,10 +163,9 @@ public class JellyRenderer : MonoBehaviour
     {
         // Canvas
         Vector2 spriteSize = _JellyRenderer.transform.localScale;
-        Vector2 size = (_UseSpriteScaleForSize) ? spriteSize : _MapSize;
 
         Vector4 canvasSettings = new Vector4(_JellyRenderer.transform.position.x, _JellyRenderer.transform.position.y,
-            size.x, size.y);
+            spriteSize.x, spriteSize.y);
         
         _ComputeShaderJellyMask.SetVector("_CanvasSettings", canvasSettings);
         

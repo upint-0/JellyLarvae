@@ -43,17 +43,18 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     {
         //float distanceToPlayer = length(playerPos.xy - posWS);
         float distanceToPlayer = 1- length(posWS - player.position);
+
+        if(player.isEating)
+        {
+            float eatDistance = (1- length(posWS - player.eatPosition)) / player.eatRadius;
+            if(eatDistance > EAT_RADIUS)
+            {
+                value.x = saturate(value.x - eatDistance);
+            }
+        }
         
         if (distanceToPlayer > DETECT_RADIUS)
         {
-            if(player.isEating)
-            {
-                float eatDistance = (1- length(posWS - player.eatPosition)) / player.eatRadius;
-                if(eatDistance > EAT_RADIUS)
-                {
-                    value.x = saturate(value.x - eatDistance);
-                }
-            }
             _PointsInfos[0].jellyValue = value.x;
         }
     }
