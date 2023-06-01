@@ -4,14 +4,10 @@ using UnityEngine;
 
 public static class UnityExtensions
 {
-    public class Vector3Uint
+    public struct Vector3Uint
     {
         public uint x, y, z;
-
-        public Vector3Uint()
-        {
-            
-        }
+        
     }
 
     public static Vector2Int MulByFloat(this Vector2Int v, float value)

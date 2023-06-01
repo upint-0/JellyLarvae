@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
     private bool DetectJelly()
     {
         //return Physics2D.OverlapCircle( transform.position, 1.0f, LayerMask.GetMask( "Wall" ) );
-        return (Jelly.GetJellyValueAtPosition(transform.position) > 0.1f);
+        return (Jelly.GetJellyValueAtPosition( transform.position, true, transform.position, 50f) > 0.1f);
     }
 
     private void HandleDash()
