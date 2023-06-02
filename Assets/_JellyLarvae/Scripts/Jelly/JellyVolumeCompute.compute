@@ -1,6 +1,8 @@
 #pragma kernel CSMain
+#pragma kernel CSInit
 
 RWTexture2D<float4> _JellyMask;
+Texture2D<float4> _JellyMaskSource;
 
 struct pointInfos
 {
@@ -25,6 +27,12 @@ float2 playerPos;
 
 #define DETECT_RADIUS 0.5
 #define EAT_RADIUS 0
+
+[numthreads(8, 8, 1)]
+void CSInit(uint3 id : SV_DispatchThreadID)
+{
+    _JellyMask[id.xy] = _JellyMaskSource[id.xy];
+}
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
