@@ -13,6 +13,8 @@ public class PlayerAttributesSO : ScriptableObject
     [SerializeField] private float _dashForce = 40.0f;
     [SerializeField] private float _dashCoolDown = 0.5f;
     [SerializeField] private float _gravityScale = 5.0f;
+    [SerializeField] private float _eatOffset = 2.0f;
+    [SerializeField] private float _eatRadius = 50.0f;
     
     // -- Porperties
     public float MinSpeed => _minSpeed;
@@ -21,4 +23,6 @@ public class PlayerAttributesSO : ScriptableObject
     public float DashForce => _dashForce;
     public float DashCoolDown => _dashCoolDown;
     public float GravityScale => _gravityScale;
+    public float EatOffset => _eatOffset;
+    public float EatRadius => _eatRadius;
 }
