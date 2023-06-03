@@ -866,7 +866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyAttributes: {fileID: 11400000, guid: 7da84da21408da543b11bb48899e4323, type: 2}
-  _Type: 1
+  _Type: 0
 --- !u!50 &372235858
 Rigidbody2D:
   serializedVersion: 4
@@ -2756,7 +2756,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyAttributes: {fileID: 11400000, guid: 7da84da21408da543b11bb48899e4323, type: 2}
-  _Type: 2
+  _Type: 0
 --- !u!50 &1694352244
 Rigidbody2D:
   serializedVersion: 4
