@@ -37,6 +37,6 @@ public class MovableEnemy : BaseEnemy
         float z_rotation = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0.0f, 0.0f, z_rotation);
         
-        _Rigidbody.AddForce(dir * Time.fixedDeltaTime * _enemyAttributes.Speed, ForceMode2D.Force);
+        _Rigidbody.AddForce(transform.right * Time.fixedDeltaTime * _enemyAttributes.Speed, ForceMode2D.Force);
     }
 }

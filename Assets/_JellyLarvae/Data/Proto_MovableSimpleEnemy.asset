@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aabb63306cd72049a77427a810c202f, type: 3}
   m_Name: Proto_MovableSimpleEnemy
   m_EditorClassIdentifier: 
-  _BaseLevel: 1
-  _Point: 2
-  _Speed: 100
+  _BaseLevel: 4
+  _Point: 1
+  _Speed: 450
   _AngularSpeed: 300
