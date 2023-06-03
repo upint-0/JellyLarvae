@@ -7,6 +7,7 @@ public class PlayerAttributesSO : ScriptableObject
 {
     // -- Fields
     
+    [Header("Movements")]
     [SerializeField] private float _minSpeed = 100.0f;
     [SerializeField] private float _maxSpeed = 200.0f;
     [SerializeField] private float _stopDistance = 1.0f;
@@ -15,7 +16,9 @@ public class PlayerAttributesSO : ScriptableObject
     [SerializeField] private float _gravityScale = 5.0f;
     [SerializeField] private float _eatOffset = 2.0f;
     [SerializeField] private float _eatRadius = 50.0f;
-    
+
+    [Header("Health")] 
+    [SerializeField] private int _baseLevel = 1;
     // -- Porperties
     public float MinSpeed => _minSpeed;
     public float MaxSpeed => _maxSpeed;
@@ -25,4 +28,5 @@ public class PlayerAttributesSO : ScriptableObject
     public float GravityScale => _gravityScale;
     public float EatOffset => _eatOffset;
     public float EatRadius => _eatRadius;
+    public int BaseLevel => _baseLevel;
 }

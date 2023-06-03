@@ -22,4 +22,24 @@ public static class UnityExtensions
         float x = new_min + ( value - old_min ) * ( new_max - new_min ) / ( old_max - old_min );
         return Mathf.Clamp( x, new_min, new_max );
     }
+
+    public static Vector3 toVec3(this Vector2 vec)
+    {
+        return new Vector3(vec.x, vec.y, 0f);
+    }
+    
+    public static RenderTexture CloneRenderTexture(this RenderTexture sourceTexture)
+    {
+        RenderTexture cloneTexture = new RenderTexture(sourceTexture.width, sourceTexture.height, sourceTexture.depth, sourceTexture.format);
+        
+        RenderTexture currentRT = RenderTexture.active;
+        RenderTexture.active = cloneTexture;
+        
+        Graphics.Blit(sourceTexture, cloneTexture);
+        
+        RenderTexture.active = currentRT;
+
+        return cloneTexture;
+    }
+    
 }
