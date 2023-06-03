@@ -9,6 +9,7 @@ public class PlayerEntity : MonoBehaviour
 {
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
+    public int CurrentLevel => _CurrentLevel;
     [Space]
     [SerializeField] private TextMeshProUGUI _LevelText;
     private void Awake()

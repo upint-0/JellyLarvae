@@ -3,11 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum E_MovableEnemyType
+{
+    Track,
+    TrackAndAvoid,
+    Avoid
+}
 [RequireComponent(typeof(Rigidbody2D))]
 public class MovableEnemy : BaseEnemy
 {
+    [SerializeField] private E_MovableEnemyType _Type;
+    
     private PlayerEntity _PlayerRef;
     private Rigidbody2D _Rigidbody;
+    
     private void Start()
     {
         _PlayerRef = GameManager._Instance._Player;
@@ -17,19 +26,48 @@ public class MovableEnemy : BaseEnemy
 
     private void FixedUpdate()
     {
+        switch (_Type)
+        {
+            case E_MovableEnemyType.Track:
+                TrackPlayer();
+                break;
+            case E_MovableEnemyType.Avoid:
+                AvoidPlayer();
+                break;
+            case E_MovableEnemyType.TrackAndAvoid:
+                if (_PlayerRef.CurrentLevel > _enemyAttributes.Level)
+                {
+                    AvoidPlayer();
+                }
+                else
+                {
+                    TrackPlayer();
+                }
+                break;
+        }
         TrackPlayer();
     }
 
     private void TrackPlayer()
     {
-        if (_PlayerRef)
-        {
-            Vector2 dirToPlayer = (_PlayerRef.transform.position - transform.position ).normalized;
-            Vector2 currentDir = Vector2.Lerp(transform.right, dirToPlayer, _enemyAttributes.AngularSpeed * Time.fixedDeltaTime);
+        Vector2 currentDir = Vector2.Lerp(transform.right, GetDirectionToPlayer(), _enemyAttributes.AngularSpeed * Time.fixedDeltaTime);
 
-            Debug.DrawRay(transform.position,  (currentDir * 10f).toVec3(), Color.red);
-            HandleMovement(currentDir);
-        }
+        Debug.DrawRay(transform.position,  (currentDir * 10f).toVec3(), Color.red);
+        HandleMovement(currentDir);
+        
+    }
+
+    private void AvoidPlayer()
+    {
+        Vector2 currentDir = Vector2.Lerp(transform.right, -GetDirectionToPlayer(), _enemyAttributes.AngularSpeed * Time.fixedDeltaTime);
+        Debug.DrawRay(transform.position,  (currentDir * 10f).toVec3(), Color.red);
+        HandleMovement(currentDir);
+    }
+
+    private Vector2 GetDirectionToPlayer()
+    {
+        Vector2 dirToPlayer = (_PlayerRef.transform.position - transform.position ).normalized;
+        return dirToPlayer;
     }
 
     private void HandleMovement(Vector2 dir)
