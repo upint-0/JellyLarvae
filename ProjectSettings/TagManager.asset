@@ -41,3 +41,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Jelly
+    uniqueID: 1385357745
+    locked: 0

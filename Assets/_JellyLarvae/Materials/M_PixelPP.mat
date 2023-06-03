@@ -40,6 +40,6 @@ Material:
     m_Colors:
     - _Color: {r: 0.7830189, g: 0.61681205, b: 0.61681205, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Pixels: {r: 128, g: 128, b: 0, a: 0}
+    - _Pixels: {r: 256, g: 256, b: 0, a: 0}
     - _Vector0: {r: 1, g: 0.58, b: 0, a: 0}
   m_BuildTextureStacks: []

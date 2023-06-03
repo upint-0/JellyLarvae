@@ -18,7 +18,7 @@ MonoBehaviour:
   _dashForce: 20
   _dashCoolDown: 1
   _gravityScale: 5
-  _eatOffset: 1.2
-  _eatRadius: 53.97
+  _eatOffset: 0.75
+  _eatRadius: 60
   _jellyDetectionThreshold: 0.15
   _baseLevel: 1

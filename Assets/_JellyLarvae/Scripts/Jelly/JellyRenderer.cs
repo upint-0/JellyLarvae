@@ -223,6 +223,7 @@ public class JellyRenderer : MonoBehaviour
 
         return _PlayerPosInfos.jellyValue;
     }
+    
     #endregion
 
 

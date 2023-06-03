@@ -71,7 +71,11 @@ public class PlayerMovement : MonoBehaviour
     {
         var position = transform.position;
         Debug.DrawRay(position - (transform.right * PlayerAttributes.EatOffset), Vector3.up, Color.blue);
-        return (Jelly.GetJellyValueAtPosition( position, true, position - (transform.right * PlayerAttributes.EatOffset), PlayerAttributes.EatRadius) > PlayerAttributes.JellyDetectionThreshold);
+        
+        // :TODO: move this logic somewhere else
+        bool eating = _rigidbody2D.velocity.magnitude > 1.0f;
+
+        return (Jelly.GetJellyValueAtPosition( position, eating, position - (transform.right * PlayerAttributes.EatOffset), PlayerAttributes.EatRadius) > PlayerAttributes.JellyDetectionThreshold);
     }
 
     private void HandleDash()
