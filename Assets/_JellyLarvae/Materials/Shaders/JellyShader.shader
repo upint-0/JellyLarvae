@@ -7,7 +7,10 @@ Shader "Custom/JellyShader"
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[ASEBegin]_MainTex("_MainTex", 2D) = "white" {}
-		[ASEEnd]_JellyColor("JellyColor", Color) = (0.2988608,0.8679245,0.4786123,1)
+		_JellyColor("JellyColor", Color) = (0.2723389,0.6792453,0.4855379,1)
+		_JellyOutlineTint("JellyOutlineTint", Color) = (0.2988608,0.8679245,0.4786123,1)
+		_JellyThreshold("JellyThreshold", Float) = 0.1
+		[ASEEnd]_JellyOutlineThickness("JellyOutlineThickness", Float) = 0.15
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 
 	}
@@ -66,6 +69,9 @@ Shader "Custom/JellyShader"
 			CBUFFER_START( UnityPerMaterial )
 			float4 _JellyColor;
 			float4 _MainTex_ST;
+			float4 _JellyOutlineTint;
+			float _JellyThreshold;
+			float _JellyOutlineThickness;
 			CBUFFER_END
 
 
@@ -134,10 +140,12 @@ Shader "Custom/JellyShader"
 				UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX( IN );
 
 				float2 uv_MainTex = IN.texCoord0.xy * _MainTex_ST.xy + _MainTex_ST.zw;
-				float4 break5 = ( _JellyColor * tex2D( _MainTex, uv_MainTex ).r );
-				float4 appendResult6 = (float4(break5.r , break5.g , break5.b , 1.0));
+				float4 tex2DNode1 = tex2D( _MainTex, uv_MainTex );
+				float temp_output_7_0 = step( _JellyThreshold , tex2DNode1.r );
+				float JellyMask18 = temp_output_7_0;
+				float OutlineMask19 = ( temp_output_7_0 - step( ( _JellyThreshold + _JellyOutlineThickness ) , tex2DNode1.r ) );
 				
-				float4 Color = appendResult6;
+				float4 Color = ( ( _JellyColor * ( JellyMask18 - OutlineMask19 ) ) + ( _JellyOutlineTint * OutlineMask19 ) );
 
 				#if ETC1_EXTERNAL_ALPHA
 					float4 alpha = SAMPLE_TEXTURE2D( _AlphaTex, sampler_AlphaTex, IN.texCoord0.xy );
@@ -158,19 +166,43 @@ Shader "Custom/JellyShader"
 }
 /*ASEBEGIN
 Version=18917
-0;73;1238;687;1160.368;336.9064;1;True;False
-Node;AmplifyShaderEditor.ColorNode;2;-710.1741,-248.9952;Inherit;False;Property;_JellyColor;JellyColor;1;0;Create;True;0;0;0;False;0;False;0.2988608,0.8679245,0.4786123,1;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SamplerNode;1;-890.3104,-59.61917;Inherit;True;Property;_MainTex;_MainTex;0;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;3;-573.1741,-54.99524;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.BreakToComponentsNode;5;-439.368,-53.90643;Inherit;False;COLOR;1;0;COLOR;0,0,0,0;False;16;FLOAT;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT;5;FLOAT;6;FLOAT;7;FLOAT;8;FLOAT;9;FLOAT;10;FLOAT;11;FLOAT;12;FLOAT;13;FLOAT;14;FLOAT;15
-Node;AmplifyShaderEditor.DynamicAppendNode;6;-278.368,-52.90643;Inherit;False;FLOAT4;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;1;False;1;FLOAT4;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;-84.0692,-61.10181;Float;False;True;-1;2;UnityEditor.ShaderGraph.PBRMasterGUI;0;13;Custom/JellyShader;cf964e524c8e69742b1d21fbe2ebcc4a;True;Unlit;0;0;Unlit;3;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;True;0;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;2;5;False;-1;10;False;-1;3;1;False;-1;10;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;0;False;False;0;Hidden/InternalErrorShader;0;0;Standard;1;Vertex Position;1;0;1;True;False;;False;0
-WireConnection;3;0;2;0
-WireConnection;3;1;1;1
-WireConnection;5;0;3;0
-WireConnection;6;0;5;0
-WireConnection;6;1;5;1
-WireConnection;6;2;5;2
-WireConnection;0;1;6;0
+2585;382;1836;961;1679.214;964.064;1.3;True;False
+Node;AmplifyShaderEditor.RangedFloatNode;10;-897.2915,166.6657;Inherit;False;Property;_JellyThreshold;JellyThreshold;3;0;Create;True;0;0;0;False;0;False;0.1;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;11;-941.2916,238.6657;Inherit;False;Property;_JellyOutlineThickness;JellyOutlineThickness;4;0;Create;True;0;0;0;False;0;False;0.15;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;1;-1035.82,-30.99935;Inherit;True;Property;_MainTex;_MainTex;0;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleAddOpNode;13;-711.2915,219.6657;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.StepOpNode;7;-562.2988,-24.03953;Inherit;False;2;0;FLOAT;0.1;False;1;FLOAT;0.1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.StepOpNode;8;-561.2988,73.96047;Inherit;False;2;0;FLOAT;0.11;False;1;FLOAT;0.1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleSubtractOpNode;9;-413.2987,23.96045;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;18;-241.6354,-29.5363;Inherit;False;JellyMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;19;-40.63529,19.46368;Inherit;False;OutlineMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;20;-591.1249,-386.1561;Inherit;False;18;JellyMask;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;24;-600.1249,-213.1561;Inherit;False;19;OutlineMask;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;14;-813.0818,-285.5612;Inherit;False;Property;_JellyOutlineTint;JellyOutlineTint;2;0;Create;True;0;0;0;False;0;False;0.2988608,0.8679245,0.4786123,1;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.ColorNode;2;-817.4654,-467.8048;Inherit;False;Property;_JellyColor;JellyColor;1;0;Create;True;0;0;0;False;0;False;0.2723389,0.6792453,0.4855379,1;0,0,0,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleSubtractOpNode;25;-415.8442,-380.9885;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;23;-283.1249,-280.1561;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;21;-282.4247,-463.7561;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;22;-118.4249,-387.7561;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;63.35455,-386.7455;Float;False;True;-1;2;UnityEditor.ShaderGraph.PBRMasterGUI;0;13;Custom/JellyShader;cf964e524c8e69742b1d21fbe2ebcc4a;True;Unlit;0;0;Unlit;3;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;True;0;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;2;5;False;-1;10;False;-1;3;1;False;-1;10;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;0;False;False;0;Hidden/InternalErrorShader;0;0;Standard;1;Vertex Position;1;0;1;True;False;;False;0
+WireConnection;13;0;10;0
+WireConnection;13;1;11;0
+WireConnection;7;0;10;0
+WireConnection;7;1;1;1
+WireConnection;8;0;13;0
+WireConnection;8;1;1;1
+WireConnection;9;0;7;0
+WireConnection;9;1;8;0
+WireConnection;18;0;7;0
+WireConnection;19;0;9;0
+WireConnection;25;0;20;0
+WireConnection;25;1;24;0
+WireConnection;23;0;14;0
+WireConnection;23;1;24;0
+WireConnection;21;0;2;0
+WireConnection;21;1;25;0
+WireConnection;22;0;21;0
+WireConnection;22;1;23;0
+WireConnection;0;1;22;0
 ASEEND*/
-//CHKSM=CB05FA56ABE5E5ACF478A7E504BA8B67D0344C41
+//CHKSM=D0487A0E6A34E4ABEEAC9A048CED4BDC5581CE3C

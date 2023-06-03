@@ -69,10 +69,9 @@ public class PlayerMovement : MonoBehaviour
 
     private bool DetectJelly()
     {
-        //return Physics2D.OverlapCircle( transform.position, 1.0f, LayerMask.GetMask( "Wall" ) );
         var position = transform.position;
         Debug.DrawRay(position - (transform.right * PlayerAttributes.EatOffset), Vector3.up, Color.blue);
-        return (Jelly.GetJellyValueAtPosition( position, true, position - (transform.right * PlayerAttributes.EatOffset), PlayerAttributes.EatRadius) > 0.1f);
+        return (Jelly.GetJellyValueAtPosition( position, true, position - (transform.right * PlayerAttributes.EatOffset), PlayerAttributes.EatRadius) > PlayerAttributes.JellyDetectionThreshold);
     }
 
     private void HandleDash()

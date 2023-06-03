@@ -20,3 +20,5 @@ MonoBehaviour:
   _gravityScale: 5
   _eatOffset: 1.2
   _eatRadius: 53.97
+  _jellyDetectionThreshold: 0.15
+  _baseLevel: 1
