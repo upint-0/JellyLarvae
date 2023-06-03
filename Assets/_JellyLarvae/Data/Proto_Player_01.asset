@@ -18,3 +18,5 @@ MonoBehaviour:
   _dashForce: 20
   _dashCoolDown: 1
   _gravityScale: 5
+  _eatOffset: 1.2
+  _eatRadius: 53.97

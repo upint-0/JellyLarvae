@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: JellyMaterial
+  m_Name: M_JellyMaterial
   m_Shader: {fileID: 4800000, guid: 96c600c636ad5f14daa9cd2c34879135, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
