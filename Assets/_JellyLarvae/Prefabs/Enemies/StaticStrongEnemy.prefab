@@ -201,5 +201,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyAttributes: {fileID: 11400000, guid: 03d61bbbc35d2db4fb01a122cff90c2e, type: 2}
   _LevelSpriteRenderer: {fileID: 5872279350786195789}
-  _LevelUpperColor: {r: 1, g: 0, b: 0, a: 1}
-  _LevelLowerColor: {r: 0, g: 0.8745098, b: 1, a: 1}
+  _LevelUpperColor: {r: 2.297397, g: 0, b: 0, a: 1}
+  _LevelLowerColor: {r: 0, g: 2.0090961, b: 2.297397, a: 1}

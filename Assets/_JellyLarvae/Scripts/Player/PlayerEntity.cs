@@ -20,10 +20,11 @@ public class PlayerEntity : MonoBehaviour
 
     private void Upgrade()
     {
-        
+        CameraFollowBehaviour._Instance.ImpulseZoom();
     }
     private void Downgrade()
     {
+        CameraFollowBehaviour._Instance.PlayCameraShake();
         if (_CurrentLevel <= 0)
         {
             Death();

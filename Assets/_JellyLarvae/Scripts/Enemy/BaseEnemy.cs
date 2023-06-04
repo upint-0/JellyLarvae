@@ -10,8 +10,8 @@ public class BaseEnemy : MonoBehaviour
 
     [Header("Level Renderer")] 
     [SerializeField] private SpriteRenderer _LevelSpriteRenderer;
-    [SerializeField] private Color _LevelUpperColor = Color.red;
-    [SerializeField] private Color _LevelLowerColor = Color.blue;
+    [SerializeField, ColorUsage(false, true)] private Color _LevelUpperColor = Color.red;
+    [SerializeField, ColorUsage(false, true)] private Color _LevelLowerColor = Color.blue;
     protected PlayerEntity _PlayerRef;
 
     protected virtual void Start()

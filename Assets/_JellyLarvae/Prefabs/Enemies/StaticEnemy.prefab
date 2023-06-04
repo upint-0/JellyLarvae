@@ -117,8 +117,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyAttributes: {fileID: 11400000, guid: 340100807766d46418722c43c2fef3eb, type: 2}
   _LevelSpriteRenderer: {fileID: 7345197752874688975}
-  _LevelUpperColor: {r: 1, g: 0, b: 0, a: 1}
-  _LevelLowerColor: {r: 0, g: 0.87456703, b: 1, a: 1}
+  _LevelUpperColor: {r: 2.297397, g: 0, b: 0, a: 1}
+  _LevelLowerColor: {r: 0, g: 2.0090961, b: 2.297397, a: 1}
 --- !u!1 &7871745918198127377
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,7 +171,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 94998c029cd933e40b02ba24ea0dd7bb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
