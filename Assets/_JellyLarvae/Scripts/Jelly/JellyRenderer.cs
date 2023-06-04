@@ -19,6 +19,11 @@ public class JellyRenderer : MonoBehaviour
     [Header("Paint")]
     [SerializeField] private bool _EditorMode = false;
     [SerializeField] private float _BrushSize = 1f;
+
+    [Header("Obstacles")] 
+    [SerializeField] private ObstacleMaskGenerator _ObstacleMaskGenerator;
+    [SerializeField] private LayerMask _ObstacleLayer;
+    [SerializeField, ShowAssetPreview()] private RenderTexture _ObstacleMaskPreview;
     
     [Header("Compute")] 
     [SerializeField] private ComputeShader _ComputeShaderJellyMask;
@@ -50,6 +55,7 @@ public class JellyRenderer : MonoBehaviour
     
     private int _InitKernel;
     private int _MainKernel;
+    private int _RemoveJellyByMaskKernel;
     private Vector3Uint _KernelGroupeSize = new Vector3Uint();
 
     private ComputeBuffer _PointsInfosBuffer;
@@ -106,6 +112,7 @@ public class JellyRenderer : MonoBehaviour
 
         _InitKernel = _ComputeShaderJellyMask.FindKernel("CSInit");
         _MainKernel = _ComputeShaderJellyMask.FindKernel("CSMain");
+        _RemoveJellyByMaskKernel = _ComputeShaderJellyMask.FindKernel("CSRemoveJellyByMask");
         _ComputeShaderJellyMask.GetKernelThreadGroupSizes(_MainKernel, out _KernelGroupeSize.x,out _KernelGroupeSize.y, out _KernelGroupeSize.z);
         
         _ComputeShaderJellyMask.SetVector("_TextureSize", new Vector2(size.x, size.y));
@@ -130,13 +137,13 @@ public class JellyRenderer : MonoBehaviour
                 (int)_KernelGroupeSize.z);
         }
     }
-    [Button()]
-    public void SaveMap()
+
+    public void SaveMap(bool overrideSourceMap)
     {
         string path = Application.dataPath + _TextureMaskPath;
         string name = _TextureFileName + SceneManager.GetActiveScene().name;
         if (_NamingUseHorodatage) name += "_" + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss");
-            
+        if (overrideSourceMap) name = _MapSource.name + "_Obstacle";
         _JellyMaskInstance.ExportToTexture2D(path, name,TextureUtils.Channel.R);
             
         Debug.Log("Save map !! Export to : " + path + name);
@@ -174,12 +181,12 @@ public class JellyRenderer : MonoBehaviour
         if ( _ReadValueAtMousePosition )
         {
             GetJellyValueAtPosition(mousePosWS, false, mousePosWS, 5f);
-            _JellyValueDebug.text = "Jelly Value : " + _PlayerPosInfos.jellyValue;
+            if(_JellyValueDebug) _JellyValueDebug.text = "Jelly Value : " + _PlayerPosInfos.jellyValue;
         }
 
         if (_EditorMode)
         {
-            if(Input.GetKeyDown(_SaveKeyCode)) SaveMap();
+            if(Input.GetKeyDown(_SaveKeyCode)) SaveMap(false);
         }
     }
     private void Draw(Vector2 mousePosWS)
@@ -226,6 +233,37 @@ public class JellyRenderer : MonoBehaviour
     
     #endregion
 
+    [Button()]
+    public void CaptureObstacleMask()
+    {
+        Vector2 spriteSize = _JellyRenderer.transform.localScale;
+        
+        _MapSize.x = (int)spriteSize.x;
+        _MapSize.y = (int)spriteSize.y;
+        
+        _MapSize = _MapSize.MulByFloat(_TextureQuality);
+        
+        _ObstacleMaskPreview = _ObstacleMaskGenerator.GenerateMask(_JellyRenderer.transform.position,
+            spriteSize, _MapSize.x, _MapSize.y, _ObstacleLayer);
+        
+        Vector2Int size = new Vector2Int((int) (_MapSize.x), (int) (_MapSize.y ));
+        
+        _JellyMaskInstance = new RenderTexture(size.x, size.y, 16, RenderTextureFormat.ARGB32);
+        
+        Init();
+        //_ComputeShaderJellyMask.GetKernelThreadGroupSizes(_MainKernel, out _KernelGroupeSize.x,out _KernelGroupeSize.y, out _KernelGroupeSize.z);
 
-    
+        _ComputeShaderJellyMask.SetTexture(_RemoveJellyByMaskKernel, "_ObstaclesMask", _ObstacleMaskPreview);
+        _ComputeShaderJellyMask.SetTexture(_RemoveJellyByMaskKernel, "_JellyMaskSource", _MapSource);
+        _ComputeShaderJellyMask.SetTexture(_RemoveJellyByMaskKernel, "_JellyMask", _JellyMaskInstance);
+        
+        _ComputeShaderJellyMask.Dispatch(_RemoveJellyByMaskKernel, 
+            (int) (_MapSize.x / _KernelGroupeSize.x), 
+            (int) (_MapSize.y /_KernelGroupeSize.y),
+            (int) _KernelGroupeSize.z);
+        
+        SaveMap(true);
+    }
+
+
 }

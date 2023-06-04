@@ -23,9 +23,9 @@ public static class UnityExtensions
         return Mathf.Clamp( x, new_min, new_max );
     }
 
-    public static Vector3 toVec3(this Vector2 vec)
+    public static Vector3 toVec3(this Vector2 vec, float z = 0f)
     {
-        return new Vector3(vec.x, vec.y, 0f);
+        return new Vector3(vec.x, vec.y, z);
     }
     
     public static RenderTexture CloneRenderTexture(this RenderTexture sourceTexture)

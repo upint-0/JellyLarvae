@@ -35,7 +35,7 @@ public class PlayerEntity : MonoBehaviour
     }
     private void RefreshLevel()
     {
-        _LevelText.text = "Level : " + _CurrentLevel;
+        if(_LevelText) _LevelText.text = "Level : " + _CurrentLevel;
     }
     
     public bool InteractWithEnemy(int enemyLevel, int enemyPoint)

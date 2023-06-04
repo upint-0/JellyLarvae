@@ -14,12 +14,11 @@ public class MovableEnemy : BaseEnemy
 {
     [SerializeField] private E_MovableEnemyType _Type;
     
-    private PlayerEntity _PlayerRef;
     private Rigidbody2D _Rigidbody;
     
-    private void Start()
+    protected override void Start()
     {
-        _PlayerRef = GameManager._Instance._Player;
+        base.Start();
         _Rigidbody = GetComponent<Rigidbody2D>();
 
     }

@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 8400000, guid: c97bd54365246d8418c2a50d85b14f8b, type: 2}
+        m_Texture: {fileID: 2800000, guid: a21b0093e4b565a49b0f9bc211a68e88, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Voronoi8512x512:
