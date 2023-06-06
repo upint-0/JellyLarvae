@@ -27,19 +27,20 @@ public static class UnityExtensions
     {
         return new Vector3(vec.x, vec.y, z);
     }
-    
+
     public static RenderTexture CloneRenderTexture(this RenderTexture sourceTexture)
     {
-        RenderTexture cloneTexture = new RenderTexture(sourceTexture.width, sourceTexture.height, sourceTexture.depth, sourceTexture.format);
-        
+        RenderTexture cloneTexture = new RenderTexture(sourceTexture.width, sourceTexture.height, sourceTexture.depth,
+            sourceTexture.format);
+
         RenderTexture currentRT = RenderTexture.active;
         RenderTexture.active = cloneTexture;
-        
+
         Graphics.Blit(sourceTexture, cloneTexture);
-        
+
         RenderTexture.active = currentRT;
 
         return cloneTexture;
     }
-    
+
 }

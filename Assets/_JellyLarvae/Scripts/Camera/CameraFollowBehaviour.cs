@@ -32,7 +32,8 @@ public class CameraFollowBehaviour : MonoBehaviour
     private Vector2 _targetPos = Vector2.zero;
     private Vector2 _EffectPos = Vector2.zero;
 
-    private IEnumerator _ZoomCoroutine;
+    private Coroutine _ZoomCoroutine;
+    private Coroutine _ShakeCoroutine;
     private Camera _Cam;
 
     private void Awake()
@@ -68,13 +69,11 @@ public class CameraFollowBehaviour : MonoBehaviour
 
     public void ImpulseZoom()
     {
-        _ZoomCoroutine ??= ZoomCoroutine();
-        
-        StartCoroutine(ZoomCoroutine());
+        _ZoomCoroutine ??= StartCoroutine(ZoomCoroutine());
     }
     public void PlayCameraShake()
     {
-        StartCoroutine(CameraShakeCoroutine());
+        _ShakeCoroutine ??=StartCoroutine(CameraShakeCoroutine());
     }
 
     private IEnumerator ZoomCoroutine()
@@ -88,6 +87,8 @@ public class CameraFollowBehaviour : MonoBehaviour
             _Cam.orthographicSize = _CurrentCamScale;
             yield return null;
         }
+
+        _ZoomCoroutine = null;
     }
     
     private IEnumerator CameraShakeCoroutine()
@@ -101,5 +102,7 @@ public class CameraFollowBehaviour : MonoBehaviour
             _Cam.orthographicSize = _CurrentCamScale;
             yield return null;
         }
+
+        _ShakeCoroutine = null;
     }
 }

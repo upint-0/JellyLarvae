@@ -17,9 +17,10 @@ public class BaseEnemy : MonoBehaviour
     protected virtual void Start()
     {
         _PlayerRef = GameManager._Instance._Player;
+        EnemyManager._Instance.AddEnemy();
     }
 
-    public void Update()
+    protected virtual void Update()
     {
         if (!_LevelSpriteRenderer) return;
         _LevelSpriteRenderer.color = (PlayerLevelChecking()) ? _LevelUpperColor: _LevelLowerColor;
@@ -32,6 +33,7 @@ public class BaseEnemy : MonoBehaviour
 
     protected virtual void Death()
     {
+        EnemyManager._Instance.RemoveEnemy();
         Destroy(gameObject);
     }
     private void OnCollisionEnter2D(Collision2D other)

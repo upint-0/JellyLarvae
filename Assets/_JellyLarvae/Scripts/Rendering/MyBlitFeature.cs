@@ -8,7 +8,7 @@ public class MyBlitFeature : ScriptableRendererFeature
     {
         // we're free to put whatever we want here, public fields will be exposed in the inspector
         public bool IsEnabled = true;
-        public RenderPassEvent WhenToInsert = RenderPassEvent.AfterRendering;
+        public RenderPassEvent WhenToInsert = RenderPassEvent.BeforeRenderingPostProcessing;
         public Material MaterialToBlit;
     }
 

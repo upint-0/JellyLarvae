@@ -1,6 +1,7 @@
 #pragma kernel CSMain
 #pragma kernel CSInit
 #pragma kernel CSRemoveJellyByMask
+#pragma kernel CSReadAndWriteJelly
 
 RWTexture2D<float4> _JellyMask;
 Texture2D<float4> _JellyMaskSource;
@@ -8,18 +9,24 @@ Texture2D<float> _ObstaclesMask;
 
 struct pointInfos
 {
+    int id;
     float jellyValue;
 };
-struct PlayerInfos
+struct JellyReader
 {
+    int id;
     float2 position;
     bool isEating;
     float eatRadius;
     float2 eatPosition;
 };
 
-StructuredBuffer<PlayerInfos> _PlayerInfos;
+StructuredBuffer<JellyReader> _PlayerInfos;
+StructuredBuffer<JellyReader> _JellyReaders;
 RWStructuredBuffer<pointInfos> _PointsInfos;
+RWStructuredBuffer<pointInfos> _JellyReadersOut;
+
+int _JellyReadersCount;
 
 float4 _BrushSettings;
 float4 _CanvasSettings;
@@ -41,7 +48,6 @@ float GetMaskValue(float value)
 {
     return (value > 0.05);
 }
-
 float BlurObstacle(int2 id)
 {
     float value = 0;
@@ -62,6 +68,7 @@ float BlurObstacle(int2 id)
     //if(value > 0.05) value = 0.7;
     return max(value, GetMaskValue(_ObstaclesMask[id]));
 }
+
 [numthreads(8, 8, 1)]
 void CSRemoveJellyByMask(uint3 id : SV_DispatchThreadID)
 {
@@ -79,7 +86,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float2 posWS = ((id.xy / _TextureSize) * _CanvasSettings.zw) + _CanvasSettings.xy - (_CanvasSettings.zw / 2);
 
     float4 value = _JellyMask[id.xy];
-    PlayerInfos player = _PlayerInfos[0];
+    JellyReader player = _PlayerInfos[0];
     
     if (_BrushSettings.w > 0)
     {
@@ -105,10 +112,28 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             _PointsInfos[0].jellyValue = value.x;
         }
     }
-
-
     
     value.w = 1;
     _JellyMask[id.xy] = value;
+}
 
+int2 ConvertWSToLocal(float2 pos, float2 canvasSize, float2 canvasPos, float2 textureSize)
+{
+    return ((pos + (canvasSize / 2) - canvasPos) / canvasSize) * textureSize;
+}
+
+[numthreads(64, 1, 1)]
+void CSReadAndWriteJelly(uint3 id : SV_DispatchThreadID)
+{
+    const int index = int(id.x);
+    if(_JellyReadersCount <= index) return;
+
+    const JellyReader reader = _JellyReaders[index];
+    const int2 checkPos = ConvertWSToLocal(reader.position, _CanvasSettings.zw, _CanvasSettings.xy, _TextureSize);
+    
+    _JellyReadersOut[index].id = reader.id;
+    //_JellyReadersOut[index].id = 1;
+    _JellyReadersOut[index].jellyValue = _JellyMask[checkPos].x;
+    //_PointsInfos[index].jellyValue = reader.position.x;
+    //_JellyReadersOut[index].jellyValue = 1;
 }

@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     
     [Header(("Input"))] 
     [SerializeField] private KeyCode _RestartKeycode = KeyCode.R;
+    [SerializeField] private KeyCode _PauseKeycode = KeyCode.P;
+    private bool _IsPaused;
 
     private void Awake()
     {
@@ -29,6 +31,12 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(_RestartKeycode))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        if (Input.GetKeyDown(_PauseKeycode))
+        {
+            Time.timeScale = (_IsPaused) ? 1f: 0f;
+            _IsPaused = !_IsPaused;
         }
     }
 }

@@ -17,7 +17,10 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine _dashRoutine = null;
 
     private Vector2 _direction = new Vector2();
+    [Space] 
+    [SerializeField] private PlayerEffect _playerEffect;
 
+    private bool _inJelly;
 
     private void Start()
     {
@@ -54,7 +57,9 @@ public class PlayerMovement : MonoBehaviour
     private void EnterJelly()
     {
         _rigidbody2D.gravityScale = 0.0f;
+        if(!_inJelly)_playerEffect.EnterInJelly();
 
+        _inJelly = true;
         if (DebugMode)
             _renderer.color = Color.green;
     }
@@ -62,7 +67,9 @@ public class PlayerMovement : MonoBehaviour
     private void ExitJelly()
     {
         _rigidbody2D.gravityScale = PlayerAttributes.GravityScale;
-
+        if(_inJelly)_playerEffect.ExitOutJelly();
+        
+        _inJelly = false;
         if (DebugMode)
             _renderer.color = Color.red;
     }
