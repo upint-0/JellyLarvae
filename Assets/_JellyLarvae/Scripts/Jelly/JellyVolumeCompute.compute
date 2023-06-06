@@ -130,10 +130,8 @@ void CSReadAndWriteJelly(uint3 id : SV_DispatchThreadID)
 
     const JellyReader reader = _JellyReaders[index];
     const int2 checkPos = ConvertWSToLocal(reader.position, _CanvasSettings.zw, _CanvasSettings.xy, _TextureSize);
-    
+
+    // Out jelly value at jelly reader position 
     _JellyReadersOut[index].id = reader.id;
-    //_JellyReadersOut[index].id = 1;
     _JellyReadersOut[index].jellyValue = _JellyMask[checkPos].x;
-    //_PointsInfos[index].jellyValue = reader.position.x;
-    //_JellyReadersOut[index].jellyValue = 1;
 }

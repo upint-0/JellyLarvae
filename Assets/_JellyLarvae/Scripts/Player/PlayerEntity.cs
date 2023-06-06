@@ -56,4 +56,12 @@ public class PlayerEntity : MonoBehaviour
             return true;
         }  
     }
+
+    #region Bonus
+    public void CollectPoint(int point)
+    {
+        _CurrentLevel += point;
+    }
+    #endregion
+
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,10 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(Camera))]
 public class ObstacleMaskGenerator : MonoBehaviour
 {
+    private void OnEnable()
+    {
+        gameObject.SetActive(false);
+    }
 
     public RenderTexture GenerateMask(Vector2 center, Vector2 sizeWS, int width, int height, LayerMask layerToCapture)
     {

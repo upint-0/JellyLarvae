@@ -43,4 +43,9 @@ public static class UnityExtensions
         return cloneTexture;
     }
 
+    public static Quaternion Random2DRotation(this Quaternion quat)
+    {
+        return Quaternion.Euler(0, 0, Random.value * 360f);
+    }
+
 }

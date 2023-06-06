@@ -280,6 +280,8 @@ public class JellyRenderer : MonoBehaviour
         
         _MapSize = _MapSize.MulByFloat(_TextureQuality);
         
+        _ObstacleMaskGenerator.gameObject.SetActive(true);
+        
         _ObstacleMaskPreview = _ObstacleMaskGenerator.GenerateMask(_JellyRenderer.transform.position,
             spriteSize, _MapSize.x, _MapSize.y, _ObstacleLayer);
         

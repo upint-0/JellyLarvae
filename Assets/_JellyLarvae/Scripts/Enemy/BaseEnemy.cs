@@ -7,7 +7,10 @@ using UnityEngine;
 public class BaseEnemy : MonoBehaviour
 {
     [SerializeField, Expandable] protected EnemyAttributesSO _enemyAttributes;
-
+    public EnemyAttributesSO EnemyAttr => _enemyAttributes;
+    
+    public int _Level;
+    
     [Header("Level Renderer")] 
     [SerializeField] private SpriteRenderer _LevelSpriteRenderer;
     [SerializeField, ColorUsage(false, true)] private Color _LevelUpperColor = Color.red;
@@ -18,7 +21,9 @@ public class BaseEnemy : MonoBehaviour
     {
         _PlayerRef = GameManager._Instance._Player;
         EnemyManager._Instance.AddEnemy();
+        if(_Level == 0)_Level = _enemyAttributes.Level;
     }
+    
 
     protected virtual void Update()
     {
@@ -28,7 +33,7 @@ public class BaseEnemy : MonoBehaviour
 
     private bool PlayerLevelChecking()
     {
-        return (_PlayerRef.CurrentLevel <= _enemyAttributes.Level);
+        return (_PlayerRef.CurrentLevel <= _Level);
     }
 
     protected virtual void Death()
@@ -40,7 +45,7 @@ public class BaseEnemy : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            GameManager._Instance._Player.InteractWithEnemy(_enemyAttributes.Level, _enemyAttributes.Point);
+            GameManager._Instance._Player.InteractWithEnemy(_Level, _enemyAttributes.Point);
             Death();
         }
     }
