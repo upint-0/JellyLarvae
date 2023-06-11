@@ -10,11 +10,15 @@ public class PlayerEntity : MonoBehaviour
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
     public int CurrentLevel => _CurrentLevel;
-    [Space]
-    [SerializeField] private TextMeshProUGUI _LevelText;
+
     private void Awake()
     {
         _CurrentLevel = _PlayerAttributes.BaseLevel;
+
+    }
+
+    private void Start()
+    {
         RefreshLevel();
     }
 
@@ -32,12 +36,15 @@ public class PlayerEntity : MonoBehaviour
     }
     private void Death()
     {
-        Debug.Log("The player is dead !!");
+        GameManager._Instance.SwitchGameState(GameManager.E_GameState.GameOver);
     }
     private void RefreshLevel()
     {
-        if(_LevelText) _LevelText.text = "Level : " + _CurrentLevel;
+        onLevelChanged?.Invoke(_CurrentLevel);
     }
+
+    public delegate void OnLevelChanged(int level);
+    public static event OnLevelChanged onLevelChanged;
     
     public bool InteractWithEnemy(int enemyLevel, int enemyPoint)
     {
@@ -61,6 +68,7 @@ public class PlayerEntity : MonoBehaviour
     public void CollectPoint(int point)
     {
         _CurrentLevel += point;
+        RefreshLevel();
     }
     #endregion
 

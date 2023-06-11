@@ -44,9 +44,10 @@ Material:
     m_Floats:
     - _AlphaCutoff: 0.5
     - _DistortAmount: 0.05
-    - _DistortTiling: 7
+    - _DistortTiling: 0.32
     - _JellyOutlineThickness: 0.1
     - _JellyThreshold: 0.2
+    - _VoronoiTiling: 0.025
     m_Colors:
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _JellyColor: {r: 0.2991723, g: 0.764151, b: 0.44814605, a: 1}

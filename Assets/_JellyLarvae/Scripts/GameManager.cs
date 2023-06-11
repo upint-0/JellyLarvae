@@ -23,6 +23,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private KeyCode _RestartKeycode = KeyCode.R;
     [SerializeField] private KeyCode _PauseKeycode = KeyCode.P;
 
+    private int _BestScore;
+    public int BestScore => _BestScore;
+    private bool _IsInit = false;
+
     private void Awake()
     {
         if (_Instance)
@@ -33,6 +37,22 @@ public class GameManager : MonoBehaviour
         {
             _Instance = this;
         }
+    }
+
+    private void Start()
+    {
+        _BestScore = DataManager._Instance.GetBestScore();
+        _IsInit = true;
+    }
+
+    private void OnEnable()
+    {
+        PlayerEntity.onLevelChanged += OnPlayerLevelChanged;
+    }
+
+    private void OnDisable()
+    {
+        PlayerEntity.onLevelChanged -= OnPlayerLevelChanged;
     }
 
     private void Update()
@@ -64,12 +84,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public delegate void OnChangeGameState();
+    public delegate void OnChangeGameState(E_GameState state);
+    public static event OnChangeGameState onChangeGameState;
+    
     public void SwitchGameState(E_GameState newState)
     {
         ExitPreviousGameState();
         _CurrentGameState = newState;
         EnterInNewGameState();
+        // Call event 
+        onChangeGameState?.Invoke(newState);
     }
 
     private void EnterInNewGameState()
@@ -103,6 +127,15 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Time.timeScale = 0f;
+    }
+
+    private void OnPlayerLevelChanged(int level)
+    {
+        if (level > _BestScore && _IsInit)
+        {
+            DataManager._Instance.SaveBestScore(level);
+            _BestScore = level;
+        }
     }
     public void RestartGame()
     {
