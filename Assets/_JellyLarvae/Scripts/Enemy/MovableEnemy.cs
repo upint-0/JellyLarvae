@@ -71,7 +71,7 @@ public class MovableEnemy : BaseEnemy
                     AvoidPlayer();
                     break;
                 case E_MovableEnemyType.TrackAndAvoid:
-                    if (_PlayerRef.CurrentLevel > _enemyAttributes.Level)
+                    if (_PlayerRef.CurrentLevel > _enemyAttributes.MinLevel)
                     {
                         AvoidPlayer();
                     }

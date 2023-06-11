@@ -37,8 +37,10 @@ public class SpawnerHelper : MonoBehaviour
     {
         public BaseEnemy _EnemyBase;
         [HideInInspector] public int _EnemyLevel;
+        [HideInInspector] public int _TypeID;
         public Collider2D _Collider;
         public int _Number;
+        public int _MaxNumberAlive;
     }
     public void SpawnInCanvas(SpawnAttributes[] attr,Vector2 center, Vector2 size, Transform parent)
     {
@@ -92,10 +94,10 @@ public class SpawnerHelper : MonoBehaviour
                 Quaternion randomRot = new Quaternion();
                 if (obj._EnemyBase)
                 {
+                    // Spawn a enemy
                     BaseEnemy enemy = Instantiate<BaseEnemy>(obj._EnemyBase, rdmPos, randomRot.Random2DRotation(), parent);
-                    enemy._Level = obj._EnemyLevel;
-                    
-                    Debug.Log("Enemy spawned : " + obj._EnemyLevel);
+                    enemy._Level = obj._EnemyLevel + Random.Range(enemy.EnemyAttr.MinLevel, enemy.EnemyAttr.MaxLevel);
+                    enemy._TypeID = obj._TypeID;
                 }
                 else
                 {

@@ -21,6 +21,8 @@ public class EnemyManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private int _EnemyCounter;
     public int EnemyCounter => _EnemyCounter;
+    
+    private int[] _EnemyCounterByType;
 
     private void Awake()
     {
@@ -34,6 +36,7 @@ public class EnemyManager : MonoBehaviour
         }
 
         _EnemiesCurrentWave = _EnemiesBaseWave;
+        _EnemyCounterByType = new int[_EnemiesBaseWave.Length];
     }
 
     private void Start()
@@ -45,32 +48,28 @@ public class EnemyManager : MonoBehaviour
     {
         while (_ContinusSpawning)
         {
-            yield return new WaitForSeconds(_TimeBetweenWave);
-            int predictCount = _EnemyCounter;
-            
+
             _CurrentPercentProgression += _ProgressionPrecentStrenght;
             
-            for (int i = 0; i < _EnemiesBaseWave.Length; i++)
-            {
-                predictCount +=  Mathf.CeilToInt(_EnemiesBaseWave[i]._Number * _CurrentPercentProgression);
-            }
-            Debug.Log("Predict count " + predictCount);
-            
-            if (_MaxEnemiesAlive > predictCount)
-            {
+
                 int playerLevel = GameManager._Instance._Player.CurrentLevel;
 
 
                 for (int i = 0; i < _EnemiesCurrentWave.Length; i++)
                 {
-                    _EnemiesCurrentWave[i]._Number =
-                        Mathf.CeilToInt(_EnemiesBaseWave[i]._Number * _CurrentPercentProgression);
-                    _EnemiesCurrentWave[i]._EnemyLevel =
-                        playerLevel + _EnemiesCurrentWave[i]._EnemyBase.EnemyAttr.Level;
+                    int numberOfEnemyToSpawn = Mathf.CeilToInt(_EnemiesBaseWave[i]._Number * _CurrentPercentProgression);
+                    numberOfEnemyToSpawn = Mathf.Min(_EnemiesBaseWave[i]._MaxNumberAlive - _EnemyCounterByType[i], numberOfEnemyToSpawn);
+                    
+                    _EnemiesCurrentWave[i]._Number = numberOfEnemyToSpawn;
+                    _EnemiesCurrentWave[i]._EnemyLevel = playerLevel;
+                    _EnemiesCurrentWave[i]._TypeID = i;
+
+                    _EnemyCounterByType[i] += numberOfEnemyToSpawn;
                 }
 
                 SpawnerHelper._Instance.Spawn(_EnemiesCurrentWave, transform);
-            }
+            
+            yield return new WaitForSeconds(_TimeBetweenWave);
         }
     }
 
@@ -79,8 +78,9 @@ public class EnemyManager : MonoBehaviour
         _EnemyCounter++;
     }
 
-    public void RemoveEnemy()
+    public void RemoveEnemy(int typeID)
     {
         _EnemyCounter--;
+        _EnemyCounterByType[typeID]--;
     }
 }

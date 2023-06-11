@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BaseEnemy : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class BaseEnemy : MonoBehaviour
     public EnemyAttributesSO EnemyAttr => _enemyAttributes;
     
     public int _Level;
+    
+    [HideInInspector] public int _TypeID;
     
     [Header("Level Renderer")] 
     [SerializeField] private SpriteRenderer _LevelSpriteRenderer;
@@ -21,7 +24,10 @@ public class BaseEnemy : MonoBehaviour
     {
         _PlayerRef = GameManager._Instance._Player;
         EnemyManager._Instance.AddEnemy();
-        if(_Level == 0)_Level = _enemyAttributes.Level;
+        if (_Level == 0)
+        {
+            _Level = Random.Range(_enemyAttributes.MinLevel, _enemyAttributes.MaxLevel);
+        }
     }
     
 
@@ -38,7 +44,7 @@ public class BaseEnemy : MonoBehaviour
 
     protected virtual void Death()
     {
-        EnemyManager._Instance.RemoveEnemy();
+        EnemyManager._Instance.RemoveEnemy(_TypeID);
         Destroy(gameObject);
     }
     private void OnCollisionEnter2D(Collision2D other)
