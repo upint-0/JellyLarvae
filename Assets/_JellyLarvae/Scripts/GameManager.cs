@@ -6,13 +6,22 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public enum E_GameState
+    {
+        InGame,
+        Paused,
+        GameOver,
+    }
+
+    [SerializeField] private E_GameState _CurrentGameState = E_GameState.InGame;
+    public E_GameState CurrentGameState => _CurrentGameState;
+    
     public static GameManager _Instance;
     public PlayerEntity _Player;
     
     [Header(("Input"))] 
     [SerializeField] private KeyCode _RestartKeycode = KeyCode.R;
     [SerializeField] private KeyCode _PauseKeycode = KeyCode.P;
-    private bool _IsPaused;
 
     private void Awake()
     {
@@ -28,15 +37,75 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(_RestartKeycode))
+        switch (_CurrentGameState)  
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            case E_GameState.InGame:
+                if (Input.GetKeyDown(_RestartKeycode))
+                {
+                    RestartGame();
+                }
+                if (Input.GetKeyDown(_PauseKeycode))
+                {
+                    SwitchGameState(E_GameState.Paused);
+                }
+                break;
+            case E_GameState.Paused:
+                if (Input.GetKeyDown(_PauseKeycode))
+                {
+                    SwitchGameState(E_GameState.InGame);
+                }
+                break;
+            case E_GameState.GameOver:
+                if (Input.GetKeyDown(_RestartKeycode))
+                {
+                    RestartGame();
+                }
+                break;
         }
+    }
 
-        if (Input.GetKeyDown(_PauseKeycode))
+    public delegate void OnChangeGameState();
+    public void SwitchGameState(E_GameState newState)
+    {
+        ExitPreviousGameState();
+        _CurrentGameState = newState;
+        EnterInNewGameState();
+    }
+
+    private void EnterInNewGameState()
+    {
+        switch (_CurrentGameState)  
         {
-            Time.timeScale = (_IsPaused) ? 1f: 0f;
-            _IsPaused = !_IsPaused;
+            case E_GameState.InGame:
+                break;
+            case E_GameState.Paused:
+                Time.timeScale = 0f;
+                break;
+            case E_GameState.GameOver:
+                GameOver();
+                break;
         }
+    }
+
+    private void ExitPreviousGameState()
+    {
+        switch (_CurrentGameState)  
+        {
+            case E_GameState.InGame:
+                break;
+            case E_GameState.Paused:
+                Time.timeScale = 1f;
+                break;
+            case E_GameState.GameOver:
+                break;
+        }
+    }
+    private void GameOver()
+    {
+        Time.timeScale = 0f;
+    }
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
