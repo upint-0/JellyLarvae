@@ -44,7 +44,7 @@ Material:
     m_Floats:
     - _AlphaCutoff: 0.5
     - _DistortAmount: 0.05
-    - _DistortTiling: 0.32
+    - _DistortTiling: 0.15
     - _JellyOutlineThickness: 0.1
     - _JellyThreshold: 0.2
     - _VoronoiTiling: 0.025

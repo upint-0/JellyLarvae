@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
@@ -21,6 +22,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerEffect _playerEffect;
 
     private bool _inJelly;
+    
+    // Varying properties 
+    [HideInInspector]public ValueWrapper<float> _CurrentMinSpeed;
+    [HideInInspector]public ValueWrapper<float> _CurrentMaxSpeed;
+    [HideInInspector]public ValueWrapper<float> _CurrentDashForce;
+
+    public float CurrentMinSpeed => _CurrentMinSpeed.Value;
+    public float CurrentMaxSpeed => _CurrentMaxSpeed.Value;
+    public float CurrentDashForce => _CurrentDashForce.Value;
+
+    private void Awake()
+    {
+        _CurrentMinSpeed.Value = PlayerAttributes.MinSpeed;
+        _CurrentMaxSpeed.Value = PlayerAttributes.MaxSpeed;
+        _CurrentDashForce.Value = PlayerAttributes.DashForce;
+    }
 
     private void Start()
     {
@@ -95,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Dash()
     {
-        _rigidbody2D.AddForce(_direction * PlayerAttributes.DashForce, ForceMode2D.Impulse);
+        _rigidbody2D.AddForce(_direction * CurrentDashForce, ForceMode2D.Impulse);
         yield return new WaitForSeconds(PlayerAttributes.DashCoolDown);
         _dashRoutine = null;
     }
@@ -107,8 +124,8 @@ public class PlayerMovement : MonoBehaviour
             float speed = distance_to_mouse.Remap(
                 PlayerAttributes.StopDistance,
                 Camera.main.orthographicSize * 2.0f,
-                PlayerAttributes.MinSpeed,
-                PlayerAttributes.MaxSpeed
+                CurrentMinSpeed,
+                CurrentMaxSpeed
                 );
             
             _rigidbody2D.AddForce(_direction * (speed * Time.fixedDeltaTime), ForceMode2D.Force);

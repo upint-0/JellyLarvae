@@ -4,23 +4,29 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
+using static PropertyBonus;
 
 public class PlayerEntity : MonoBehaviour
 {
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
     public int CurrentLevel => _CurrentLevel;
-
+    public PlayerMovement _PlayerMvt;
+    private Coroutine BonusCoroutine;
+    private Dictionary<int, Coroutine> BonusCoroutineDict = new Dictionary<int, Coroutine>();
+    
     private void Awake()
     {
         _CurrentLevel = _PlayerAttributes.BaseLevel;
-
+        
     }
 
     private void Start()
     {
         RefreshLevel();
+
     }
+    
 
     private void Upgrade()
     {
@@ -69,6 +75,39 @@ public class PlayerEntity : MonoBehaviour
     {
         _CurrentLevel += point;
         RefreshLevel();
+    }
+
+    public void CollectPropertyBonus(ValueWrapper<float> property, float bonusValue, float time, E_BonusType type)
+    {
+        Coroutine c;
+        int id = (int) type;
+        if (BonusCoroutineDict.TryGetValue(id, out c))
+        {
+            StopCoroutine(c);
+            c = StartCoroutine(SetTempoBonus(property, bonusValue, time, id));
+            BonusCoroutineDict[id] = c;
+        }
+        else
+        {
+            c = StartCoroutine(SetTempoBonus(property, bonusValue, time, id));
+            BonusCoroutineDict.Add(id, c);
+            UIManager._Instance.ActiveDisableBonus(true,id);
+        }
+        
+        //if(BonusCoroutine != null) return;
+        //BonusCoroutine = StartCoroutine(SetTempoBonus(property, bonusValue, time, id));
+    }
+
+    private IEnumerator SetTempoBonus(ValueWrapper<float> property, float bonusValue, float time, int id)
+    {
+        float baseValue = property.Value;
+        property.Value = bonusValue;
+        yield return new WaitForSeconds(time);
+        property.Value = baseValue;
+
+        BonusCoroutineDict[id] = null;
+        BonusCoroutineDict.Remove(id);
+        UIManager._Instance.ActiveDisableBonus(false,id);
     }
     #endregion
 

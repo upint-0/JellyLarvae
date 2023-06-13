@@ -3,14 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static GameManager;
-
+using static PropertyBonus;
 public class UIManager : MonoBehaviour
 {
+    [Serializable]
+    struct BonusIcon
+    {
+        public E_BonusType _BonusType;
+        public Image _Img;
+    }
+
+    public static UIManager _Instance;
+    
     [SerializeField] private TextMeshProUGUI _TextPlayerLevel;
-    [Space] 
+    [Header("HUD")] 
+    [SerializeField] private BonusIcon[] _BonusIcon;
+    [Header("Game Over Panel")] 
     [SerializeField] private GameObject _GameOverPanel;
     [SerializeField] private TextMeshProUGUI _BestscoreGameOverPanel;
+
+    private void Awake()
+    {
+        if (_Instance)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            _Instance = this;
+        }
+        foreach (var b in _BonusIcon)
+        {
+            b._Img.gameObject.SetActive(false);
+        }
+    }
 
     private void OnEnable()
     {
@@ -42,5 +70,17 @@ public class UIManager : MonoBehaviour
                 break;
         }
 
+    }
+
+    public void ActiveDisableBonus(bool active, int bonusType)
+    {
+        Debug.Log("Active bonus : " + bonusType);
+        foreach (var b in _BonusIcon)
+        {
+            if ((int)b._BonusType == bonusType)
+            {
+                b._Img.gameObject.SetActive(active);
+            }
+        }
     }
 }
