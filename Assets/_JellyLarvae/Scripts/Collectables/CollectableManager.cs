@@ -33,7 +33,12 @@ public class CollectableManager : MonoBehaviour
             _Instance = this;
         }
 
-        _CollectableCurrentWave = _CollectablesToSpawn;
+        _CollectableCurrentWave= new SpawnableAttributes[_CollectablesToSpawn.Length];
+        for (int i = 0; i < _CollectablesToSpawn.Length; i++)
+        {
+            _CollectableCurrentWave[i] = _CollectablesToSpawn[i].GetCopy();
+        }
+        
         _CollectableCounterByType = new int[_CollectablesToSpawn.Length];
     }
 
@@ -52,12 +57,14 @@ public class CollectableManager : MonoBehaviour
                 for (int i = 0; i < _CollectableCurrentWave.Length; i++)
                 {
                     int numberToSpawn = Mathf.CeilToInt(_CollectablesToSpawn[i]._Number * _CurrentPercentProgression);
+
                     numberToSpawn = Mathf.Min(_CollectablesToSpawn[i]._MaxNumberAlive - _CollectableCounterByType[i], numberToSpawn);
-                    
+
                     _CollectableCurrentWave[i]._Number = numberToSpawn;
                     _CollectableCurrentWave[i]._TypeID = i;
 
                     _CollectableCounterByType[i] += numberToSpawn;
+
                 }
 
                 SpawnerHelper._Instance.Spawn(_CollectableCurrentWave, transform, true);

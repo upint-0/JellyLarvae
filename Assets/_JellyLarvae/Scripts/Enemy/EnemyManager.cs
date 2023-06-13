@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static SpawnerHelper;
+using Random = UnityEngine.Random;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -13,8 +15,12 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float _TimeBetweenWave = 30f;
 
     [SerializeField] private SpawnableAttributes[] _EnemiesBaseWave;
-    [SerializeField] [Range(0,1)] private float _ProgressionPrecentStrenght = 0.5f;
-    private float _CurrentPercentProgression = 1f;
+    [Space]
+    [SerializeField] [Range(0,1)] private float _NumberProgressionPrecent = 0.5f;
+    [SerializeField] [Range(0,1)] private float _LevelProgressionPrecent = 0.5f;
+    
+    private float _CurrentNumberPercentProgression = 1f;
+    private float _CurrentLevelPercentProgression = 0f;
     private SpawnableAttributes[] _EnemiesCurrentWave;
     
     [Header("Debug")]
@@ -33,8 +39,13 @@ public class EnemyManager : MonoBehaviour
         {
             _Instance = this;
         }
-
-        _EnemiesCurrentWave = _EnemiesBaseWave;
+        
+        _EnemiesCurrentWave= new SpawnableAttributes[_EnemiesBaseWave.Length];
+        for (int i = 0; i < _EnemiesBaseWave.Length; i++)
+        {
+            _EnemiesCurrentWave[i] = _EnemiesBaseWave[i].GetCopy();
+        }
+        
         _EnemyCounterByType = new int[_EnemiesBaseWave.Length];
     }
 
@@ -48,7 +59,7 @@ public class EnemyManager : MonoBehaviour
         while (_ContinusSpawning)
         {
 
-            _CurrentPercentProgression += _ProgressionPrecentStrenght;
+            _CurrentNumberPercentProgression += _NumberProgressionPrecent;
             
 
                 int playerLevel = GameManager._Instance._Player.CurrentLevel;
@@ -56,11 +67,16 @@ public class EnemyManager : MonoBehaviour
 
                 for (int i = 0; i < _EnemiesCurrentWave.Length; i++)
                 {
-                    int numberOfEnemyToSpawn = Mathf.CeilToInt(_EnemiesBaseWave[i]._Number * _CurrentPercentProgression);
+                    int numberOfEnemyToSpawn = Mathf.CeilToInt(_EnemiesBaseWave[i]._Number * _CurrentNumberPercentProgression);
                     numberOfEnemyToSpawn = Mathf.Min(_EnemiesBaseWave[i]._MaxNumberAlive - _EnemyCounterByType[i], numberOfEnemyToSpawn);
                     
                     _EnemiesCurrentWave[i]._Number = numberOfEnemyToSpawn;
-                    _EnemiesCurrentWave[i]._EnemyLevel = playerLevel;
+
+                    int levelComp = (int) (Random.Range(
+                        _EnemiesBaseWave[i]._EnemyBase.EnemyAttr.MinLevel,
+                        _EnemiesBaseWave[i]._EnemyBase.EnemyAttr.MaxLevel) * _LevelProgressionPrecent);
+                    
+                    _EnemiesCurrentWave[i]._EnemyLevel = playerLevel + levelComp;
                     _EnemiesCurrentWave[i]._TypeID = i;
 
                     _EnemyCounterByType[i] += numberOfEnemyToSpawn;

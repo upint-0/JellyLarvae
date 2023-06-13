@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,7 +20,10 @@ public class GameManager : MonoBehaviour
     
     public static GameManager _Instance;
     public PlayerEntity _Player;
-    
+
+    [FormerlySerializedAs("_TimeSpeed")]
+    [Header("Debug")] 
+    [SerializeField] private float _TimeScale = 1f;
     [Header(("Input"))] 
     [SerializeField] private KeyCode _RestartKeycode = KeyCode.R;
     [SerializeField] private KeyCode _PauseKeycode = KeyCode.P;
@@ -82,6 +87,12 @@ public class GameManager : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    [Button()]
+    public void ApplyTimeScale()
+    {
+        Time.timeScale = _TimeScale;
     }
 
     public delegate void OnChangeGameState(E_GameState state);

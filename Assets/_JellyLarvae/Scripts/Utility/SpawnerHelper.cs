@@ -41,6 +41,28 @@ public class SpawnerHelper : MonoBehaviour
         public Collider2D _Collider;
         public int _Number;
         public int _MaxNumberAlive;
+
+        public SpawnableAttributes GetCopy()
+        {
+            return new SpawnableAttributes()
+            {
+                _EnemyBase = this._EnemyBase,
+                _EnemyLevel = this._EnemyLevel,
+                _TypeID =  this._TypeID,
+                _Collider = this._Collider,
+                _Number = this._Number,
+                _MaxNumberAlive = this._MaxNumberAlive
+            };
+        }
+        public SpawnableAttributes[] GetListCopy(SpawnableAttributes[] list)
+        {
+            SpawnableAttributes[] l = new SpawnableAttributes[list.Length];
+            for (int i = 0; i < list.Length; i++)
+            {
+                l[i] = list[i].GetCopy();
+            }
+            return l;
+        }
     }
     
     public void SpawnInCanvas(SpawnableAttributes[] attr,Vector2 center, Vector2 size, Transform parent, bool isCollectable)

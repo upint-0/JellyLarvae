@@ -1345,9 +1345,10 @@ MonoBehaviour:
     _EnemyLevel: 0
     _TypeID: 0
     _Collider: {fileID: 1516824465040393780, guid: 451d7a0695514c74ebfeba8d14c17335, type: 3}
-    _Number: 3
+    _Number: 7
     _MaxNumberAlive: 128
-  _ProgressionPrecentStrenght: 0.05
+  _NumberProgressionPrecent: 0.293
+  _LevelProgressionPrecent: 0.218
   _EnemyCounter: 0
 --- !u!1 &230485491
 GameObject:
@@ -4323,6 +4324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed209baafdf1d74f87e2f665f98b7c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _PlayerState: 0
   _PlayerAttributes: {fileID: 11400000, guid: 1cc83799c5d8b7249bb2bb7493dd1f1e, type: 2}
   _CurrentLevel: 0
   _PlayerMvt: {fileID: 1199768382}
@@ -4920,11 +4922,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -6105,6 +6107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _CurrentGameState: 0
   _Player: {fileID: 1199768375}
+  _TimeScale: 1
   _RestartKeycode: 114
   _PauseKeycode: 9
 --- !u!4 &1681567916

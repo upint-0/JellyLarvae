@@ -6,6 +6,15 @@ using static PropertyBonus;
 
 public class PlayerEntity : MonoBehaviour
 {
+    public enum E_PlayerState
+    {
+        Alive,
+        Invincible,
+        Death
+    }
+
+    [SerializeField] private E_PlayerState _PlayerState = E_PlayerState.Alive;
+    [Space]
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
     public int CurrentLevel => _CurrentLevel;
@@ -16,13 +25,11 @@ public class PlayerEntity : MonoBehaviour
     private void Awake()
     {
         _CurrentLevel = _PlayerAttributes.BaseLevel;
-        
     }
 
     private void Start()
     {
         RefreshLevel();
-
     }
     
 
@@ -52,20 +59,37 @@ public class PlayerEntity : MonoBehaviour
     
     public bool InteractWithEnemy(int enemyLevel, int enemyPoint)
     {
-        if (enemyLevel >= _CurrentLevel)
+        switch (_PlayerState)
         {
-            _CurrentLevel -= enemyPoint;
-            Downgrade();
-            RefreshLevel();
-            return false;
+            case E_PlayerState.Alive: 
+                if (enemyLevel > _CurrentLevel)
+                {
+                    // Test (before is point) - todo modify 
+                    int difference = enemyLevel - _CurrentLevel;
+                    Debug.Log("difference " + difference);
+                    _CurrentLevel -= difference;
+                    Downgrade();
+                    RefreshLevel();
+                    return false;
+                }
+                else
+                {
+                    _CurrentLevel += enemyPoint;
+                    Upgrade();
+                    RefreshLevel();
+                    return true;
+                }
+                break;
+            case E_PlayerState.Invincible :
+                _CurrentLevel += enemyPoint;
+                Upgrade();
+                RefreshLevel();
+                return true;
+                break;
+            default:
+                return false;
         }
-        else
-        {
-            _CurrentLevel += enemyPoint;
-            Upgrade();
-            RefreshLevel();
-            return true;
-        }  
+
     }
 
     #region Bonus
