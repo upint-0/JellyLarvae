@@ -11,7 +11,7 @@ public class SpawnerHelper : MonoBehaviour
 {
     public static SpawnerHelper _Instance;
     
-    [SerializeField] private SpawnAttributes[] _ObjToSpawn;
+    [SerializeField] private SpawnableAttributes[] _ObjToSpawn;
     [SerializeField] private SpriteRenderer _Canvas;
 
     private void Awake()
@@ -29,11 +29,11 @@ public class SpawnerHelper : MonoBehaviour
     [Button()]
     public void SpawnObj()
     {
-        Spawn(_ObjToSpawn, transform);
+        Spawn(_ObjToSpawn, transform, false);
     }
     
     [Serializable]
-    public struct SpawnAttributes
+    public struct SpawnableAttributes
     {
         public BaseEnemy _EnemyBase;
         [HideInInspector] public int _EnemyLevel;
@@ -42,27 +42,29 @@ public class SpawnerHelper : MonoBehaviour
         public int _Number;
         public int _MaxNumberAlive;
     }
-    public void SpawnInCanvas(SpawnAttributes[] attr,Vector2 center, Vector2 size, Transform parent)
+    
+    public void SpawnInCanvas(SpawnableAttributes[] attr,Vector2 center, Vector2 size, Transform parent, bool isCollectable)
     {
         for (int i = 0; i < attr.Length; i++)
         {
             for (int j = 0; j < attr[i]._Number; j++)
             {
-                TrySpawnObj(attr[i], center, size, parent);
+                TrySpawnObj(attr[i], center, size, parent, isCollectable);
             }
         }
     }
-    public void Spawn(SpawnAttributes[] attr, Transform parent)
+    public void Spawn(SpawnableAttributes[] attr, Transform parent, bool isCollectable)
     {
         for (int i = 0; i < attr.Length; i++)
         {
             for (int j = 0; j < attr[i]._Number; j++)
             {
-                TrySpawnObj(attr[i], _Canvas.transform.position, _Canvas.transform.localScale, parent);
+                TrySpawnObj(attr[i], _Canvas.transform.position, _Canvas.transform.localScale, parent, isCollectable);
             }
         }
     }
-    private void TrySpawnObj(SpawnAttributes obj, Vector2 center, Vector2 size, Transform parent)
+    
+    private void TrySpawnObj(SpawnableAttributes obj, Vector2 center, Vector2 size, Transform parent, bool isCollectable)
     {
         bool isSpawned = false;
         
@@ -101,7 +103,11 @@ public class SpawnerHelper : MonoBehaviour
                 }
                 else
                 {
-                    Instantiate(col.gameObject, rdmPos, randomRot.Random2DRotation(), parent);
+                    GameObject clone = Instantiate(col.gameObject, rdmPos, randomRot.Random2DRotation(), parent);
+                    if (isCollectable)
+                    {
+                        clone.GetComponent<CollectableBase>()._TypeID = obj._TypeID;
+                    }
                 }
 
                 isSpawned = true;

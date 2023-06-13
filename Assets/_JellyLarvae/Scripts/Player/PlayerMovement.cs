@@ -34,9 +34,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        _CurrentMinSpeed.Value = PlayerAttributes.MinSpeed;
-        _CurrentMaxSpeed.Value = PlayerAttributes.MaxSpeed;
-        _CurrentDashForce.Value = PlayerAttributes.DashForce;
+        _CurrentMinSpeed = new ValueWrapper<float>(PlayerAttributes.MinSpeed);
+        _CurrentMaxSpeed = new ValueWrapper<float>(PlayerAttributes.MaxSpeed);
+        _CurrentDashForce = new ValueWrapper<float>(PlayerAttributes.DashForce);
     }
 
     private void Start()

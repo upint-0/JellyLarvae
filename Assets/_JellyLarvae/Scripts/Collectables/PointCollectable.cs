@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PointCollectable : CollectableBase
@@ -8,8 +6,8 @@ public class PointCollectable : CollectableBase
     [SerializeField] private int _Point;
     protected override void Collect()
     {
-        base.Collect();
         GameManager._Instance._Player.CollectPoint(_Point);
+        base.Collect();
         Destroy(gameObject);
     }
 }

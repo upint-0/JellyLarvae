@@ -1,20 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static GameManager;
 using static PropertyBonus;
+
 public class UIManager : MonoBehaviour
 {
+    #region Struct 
     [Serializable]
     struct BonusIcon
     {
         public E_BonusType _BonusType;
         public Image _Img;
     }
-
+    #endregion
+    #region Variables
     public static UIManager _Instance;
     
     [SerializeField] private TextMeshProUGUI _TextPlayerLevel;
@@ -23,7 +24,9 @@ public class UIManager : MonoBehaviour
     [Header("Game Over Panel")] 
     [SerializeField] private GameObject _GameOverPanel;
     [SerializeField] private TextMeshProUGUI _BestscoreGameOverPanel;
-
+    #endregion
+    
+    #region Init 
     private void Awake()
     {
         if (_Instance)
@@ -39,7 +42,8 @@ public class UIManager : MonoBehaviour
             b._Img.gameObject.SetActive(false);
         }
     }
-
+    #endregion
+    #region Event listener
     private void OnEnable()
     {
         GameManager.onChangeGameState += GameStateIsUpdated;
@@ -52,7 +56,9 @@ public class UIManager : MonoBehaviour
         GameManager.onChangeGameState -= GameStateIsUpdated;
         PlayerEntity.onLevelChanged -= PlayerLevelIsUpdated;
     }
-    
+    #endregion
+
+    #region Manage UI
     private void PlayerLevelIsUpdated(int level)
     {
         _TextPlayerLevel.text = "Level : " + level;
@@ -74,7 +80,6 @@ public class UIManager : MonoBehaviour
 
     public void ActiveDisableBonus(bool active, int bonusType)
     {
-        Debug.Log("Active bonus : " + bonusType);
         foreach (var b in _BonusIcon)
         {
             if ((int)b._BonusType == bonusType)
@@ -83,4 +88,6 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+    #endregion
+
 }

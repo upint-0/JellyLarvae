@@ -6,24 +6,23 @@ using static SpawnerHelper;
 
 public class EnemyManager : MonoBehaviour
 {
+    #region Variables
     public static EnemyManager _Instance;
     [Header("Waves")] 
     [SerializeField] private bool _ContinusSpawning = true;
     [SerializeField] private float _TimeBetweenWave = 30f;
 
-    [SerializeField] private SpawnAttributes[] _EnemiesBaseWave;
+    [SerializeField] private SpawnableAttributes[] _EnemiesBaseWave;
     [SerializeField] [Range(0,1)] private float _ProgressionPrecentStrenght = 0.5f;
     private float _CurrentPercentProgression = 1f;
-    private SpawnAttributes[] _EnemiesCurrentWave;
-
-    [Space] 
-    [SerializeField] private int _MaxEnemiesAlive = 128;
+    private SpawnableAttributes[] _EnemiesCurrentWave;
+    
     [Header("Debug")]
     [SerializeField] private int _EnemyCounter;
     public int EnemyCounter => _EnemyCounter;
     
     private int[] _EnemyCounterByType;
-
+    #endregion
     private void Awake()
     {
         if (_Instance)
@@ -67,7 +66,7 @@ public class EnemyManager : MonoBehaviour
                     _EnemyCounterByType[i] += numberOfEnemyToSpawn;
                 }
 
-                SpawnerHelper._Instance.Spawn(_EnemiesCurrentWave, transform);
+                SpawnerHelper._Instance.Spawn(_EnemiesCurrentWave, transform, false);
             
             yield return new WaitForSeconds(_TimeBetweenWave);
         }

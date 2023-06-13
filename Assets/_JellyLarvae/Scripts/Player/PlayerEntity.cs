@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
-using TMPro;
 using UnityEngine;
 using static PropertyBonus;
 
@@ -93,17 +91,14 @@ public class PlayerEntity : MonoBehaviour
             BonusCoroutineDict.Add(id, c);
             UIManager._Instance.ActiveDisableBonus(true,id);
         }
-        
-        //if(BonusCoroutine != null) return;
-        //BonusCoroutine = StartCoroutine(SetTempoBonus(property, bonusValue, time, id));
+
     }
 
     private IEnumerator SetTempoBonus(ValueWrapper<float> property, float bonusValue, float time, int id)
     {
-        float baseValue = property.Value;
         property.Value = bonusValue;
         yield return new WaitForSeconds(time);
-        property.Value = baseValue;
+        property.Value = property.BaseValue;
 
         BonusCoroutineDict[id] = null;
         BonusCoroutineDict.Remove(id);
