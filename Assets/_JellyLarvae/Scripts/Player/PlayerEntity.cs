@@ -18,6 +18,7 @@ public class PlayerEntity : MonoBehaviour
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
     public int CurrentLevel => _CurrentLevel;
+    public float Test = 5f;
     public PlayerMovement _PlayerMvt;
     private Coroutine BonusCoroutine;
     private Dictionary<int, Coroutine> BonusCoroutineDict = new Dictionary<int, Coroutine>();
@@ -57,17 +58,14 @@ public class PlayerEntity : MonoBehaviour
     public delegate void OnLevelChanged(int level);
     public static event OnLevelChanged onLevelChanged;
     
-    public bool InteractWithEnemy(int enemyLevel, int enemyPoint)
+    public bool InteractWithEnemy(int enemyLevel, int enemyPoint, int damage)
     {
         switch (_PlayerState)
         {
             case E_PlayerState.Alive: 
                 if (enemyLevel > _CurrentLevel)
                 {
-                    // Test (before is point) - todo modify 
-                    int difference = enemyLevel - _CurrentLevel;
-                    Debug.Log("difference " + difference);
-                    _CurrentLevel -= difference;
+                    _CurrentLevel -= damage;
                     Downgrade();
                     RefreshLevel();
                     return false;
@@ -79,13 +77,11 @@ public class PlayerEntity : MonoBehaviour
                     RefreshLevel();
                     return true;
                 }
-                break;
             case E_PlayerState.Invincible :
                 _CurrentLevel += enemyPoint;
                 Upgrade();
                 RefreshLevel();
                 return true;
-                break;
             default:
                 return false;
         }

@@ -11,7 +11,7 @@ public class BaseEnemy : MonoBehaviour
     public EnemyAttributesSO EnemyAttr => _enemyAttributes;
     
     public int _Level;
-    
+    [HideInInspector] public int _CurrentDamage;
     [HideInInspector] public int _TypeID;
     
     [Header("Level Renderer")] 
@@ -20,14 +20,20 @@ public class BaseEnemy : MonoBehaviour
     [SerializeField, ColorUsage(false, true)] private Color _LevelLowerColor = Color.blue;
     protected PlayerEntity _PlayerRef;
 
+    private void Awake()
+    {
+        if (_Level == 0)
+        {
+            _Level = Random.Range(_enemyAttributes.MinLevel, _enemyAttributes.MaxLevel);
+            _CurrentDamage = _enemyAttributes.Damage;
+        }
+    }
+
     protected virtual void Start()
     {
         _PlayerRef = GameManager._Instance._Player;
         EnemyManager._Instance.AddEnemy();
-        if (_Level == 0)
-        {
-            _Level = Random.Range(_enemyAttributes.MinLevel, _enemyAttributes.MaxLevel);
-        }
+
     }
     
 
@@ -51,7 +57,7 @@ public class BaseEnemy : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            GameManager._Instance._Player.InteractWithEnemy(_Level, _enemyAttributes.Point);
+            GameManager._Instance._Player.InteractWithEnemy(_Level, _enemyAttributes.Point, _CurrentDamage);
             Death();
         }
     }

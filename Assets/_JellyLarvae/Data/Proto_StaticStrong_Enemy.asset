@@ -15,6 +15,7 @@ MonoBehaviour:
   _MinBaseLevel: 3
   _MaxBaseLevel: 5
   _Point: 1
+  _Damage: 2
   _Speed: 10
   _AngularSpeed: 20
   _RangePlayerDetection: 4

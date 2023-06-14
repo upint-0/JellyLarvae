@@ -41,7 +41,9 @@ public class SpawnerHelper : MonoBehaviour
         public Collider2D _Collider;
         public int _Number;
         public int _MaxNumberAlive;
-
+        [Space] 
+        public int _LevelStepToIncreaseDamage;
+        
         public SpawnableAttributes GetCopy()
         {
             return new SpawnableAttributes()
@@ -51,7 +53,8 @@ public class SpawnerHelper : MonoBehaviour
                 _TypeID =  this._TypeID,
                 _Collider = this._Collider,
                 _Number = this._Number,
-                _MaxNumberAlive = this._MaxNumberAlive
+                _MaxNumberAlive = this._MaxNumberAlive,
+                _LevelStepToIncreaseDamage = this._LevelStepToIncreaseDamage
             };
         }
         public SpawnableAttributes[] GetListCopy(SpawnableAttributes[] list)
@@ -67,26 +70,28 @@ public class SpawnerHelper : MonoBehaviour
     
     public void SpawnInCanvas(SpawnableAttributes[] attr,Vector2 center, Vector2 size, Transform parent, bool isCollectable)
     {
+        int playerLevel = GameManager._Instance._Player.CurrentLevel;
         for (int i = 0; i < attr.Length; i++)
         {
             for (int j = 0; j < attr[i]._Number; j++)
             {
-                TrySpawnObj(attr[i], center, size, parent, isCollectable);
+                TrySpawnObj(attr[i], center, size, parent, isCollectable, playerLevel);
             }
         }
     }
     public void Spawn(SpawnableAttributes[] attr, Transform parent, bool isCollectable)
     {
+        int playerLevel = GameManager._Instance._Player.CurrentLevel;
         for (int i = 0; i < attr.Length; i++)
         {
             for (int j = 0; j < attr[i]._Number; j++)
             {
-                TrySpawnObj(attr[i], _Canvas.transform.position, _Canvas.transform.localScale, parent, isCollectable);
+                TrySpawnObj(attr[i], _Canvas.transform.position, _Canvas.transform.localScale, parent, isCollectable, playerLevel);
             }
         }
     }
     
-    private void TrySpawnObj(SpawnableAttributes obj, Vector2 center, Vector2 size, Transform parent, bool isCollectable)
+    private void TrySpawnObj(SpawnableAttributes obj, Vector2 center, Vector2 size, Transform parent, bool isCollectable, int playerLevel)
     {
         bool isSpawned = false;
         
@@ -122,6 +127,7 @@ public class SpawnerHelper : MonoBehaviour
                     BaseEnemy enemy = Instantiate<BaseEnemy>(obj._EnemyBase, rdmPos, randomRot.Random2DRotation(), parent);
                     enemy._Level = obj._EnemyLevel + Random.Range(enemy.EnemyAttr.MinLevel, enemy.EnemyAttr.MaxLevel);
                     enemy._TypeID = obj._TypeID;
+                    enemy._CurrentDamage += playerLevel / obj._LevelStepToIncreaseDamage;
                 }
                 else
                 {
