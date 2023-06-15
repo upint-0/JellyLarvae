@@ -11,7 +11,7 @@ public class SpawnerHelper : MonoBehaviour
 {
     public static SpawnerHelper _Instance;
     
-    [SerializeField] private SpawnAttributes[] _ObjToSpawn;
+    [SerializeField] private SpawnableAttributes[] _ObjToSpawn;
     [SerializeField] private SpriteRenderer _Canvas;
 
     private void Awake()
@@ -29,38 +29,69 @@ public class SpawnerHelper : MonoBehaviour
     [Button()]
     public void SpawnObj()
     {
-        Spawn(_ObjToSpawn, transform);
+        Spawn(_ObjToSpawn, transform, false);
     }
     
     [Serializable]
-    public struct SpawnAttributes
+    public struct SpawnableAttributes
     {
         public BaseEnemy _EnemyBase;
         [HideInInspector] public int _EnemyLevel;
+        [HideInInspector] public int _TypeID;
         public Collider2D _Collider;
         public int _Number;
+        public int _MaxNumberAlive;
+        [Space] 
+        public int _LevelStepToIncreaseDamage;
+        
+        public SpawnableAttributes GetCopy()
+        {
+            return new SpawnableAttributes()
+            {
+                _EnemyBase = this._EnemyBase,
+                _EnemyLevel = this._EnemyLevel,
+                _TypeID =  this._TypeID,
+                _Collider = this._Collider,
+                _Number = this._Number,
+                _MaxNumberAlive = this._MaxNumberAlive,
+                _LevelStepToIncreaseDamage = this._LevelStepToIncreaseDamage
+            };
+        }
+        public SpawnableAttributes[] GetListCopy(SpawnableAttributes[] list)
+        {
+            SpawnableAttributes[] l = new SpawnableAttributes[list.Length];
+            for (int i = 0; i < list.Length; i++)
+            {
+                l[i] = list[i].GetCopy();
+            }
+            return l;
+        }
     }
-    public void SpawnInCanvas(SpawnAttributes[] attr,Vector2 center, Vector2 size, Transform parent)
+    
+    public void SpawnInCanvas(SpawnableAttributes[] attr,Vector2 center, Vector2 size, Transform parent, bool isCollectable)
     {
+        int playerLevel = GameManager._Instance._Player.CurrentLevel;
         for (int i = 0; i < attr.Length; i++)
         {
             for (int j = 0; j < attr[i]._Number; j++)
             {
-                TrySpawnObj(attr[i], center, size, parent);
+                TrySpawnObj(attr[i], center, size, parent, isCollectable, playerLevel);
             }
         }
     }
-    public void Spawn(SpawnAttributes[] attr, Transform parent)
+    public void Spawn(SpawnableAttributes[] attr, Transform parent, bool isCollectable)
     {
+        int playerLevel = GameManager._Instance._Player.CurrentLevel;
         for (int i = 0; i < attr.Length; i++)
         {
             for (int j = 0; j < attr[i]._Number; j++)
             {
-                TrySpawnObj(attr[i], _Canvas.transform.position, _Canvas.transform.localScale, parent);
+                TrySpawnObj(attr[i], _Canvas.transform.position, _Canvas.transform.localScale, parent, isCollectable, playerLevel);
             }
         }
     }
-    private void TrySpawnObj(SpawnAttributes obj, Vector2 center, Vector2 size, Transform parent)
+    
+    private void TrySpawnObj(SpawnableAttributes obj, Vector2 center, Vector2 size, Transform parent, bool isCollectable, int playerLevel)
     {
         bool isSpawned = false;
         
@@ -92,14 +123,19 @@ public class SpawnerHelper : MonoBehaviour
                 Quaternion randomRot = new Quaternion();
                 if (obj._EnemyBase)
                 {
+                    // Spawn a enemy
                     BaseEnemy enemy = Instantiate<BaseEnemy>(obj._EnemyBase, rdmPos, randomRot.Random2DRotation(), parent);
-                    enemy._Level = obj._EnemyLevel;
-                    
-                    Debug.Log("Enemy spawned : " + obj._EnemyLevel);
+                    enemy._Level = obj._EnemyLevel + Random.Range(enemy.EnemyAttr.MinLevel, enemy.EnemyAttr.MaxLevel);
+                    enemy._TypeID = obj._TypeID;
+                    enemy._CurrentDamage += playerLevel / obj._LevelStepToIncreaseDamage;
                 }
                 else
                 {
-                    Instantiate(col.gameObject, rdmPos, randomRot.Random2DRotation(), parent);
+                    GameObject clone = Instantiate(col.gameObject, rdmPos, randomRot.Random2DRotation(), parent);
+                    if (isCollectable)
+                    {
+                        clone.GetComponent<CollectableBase>()._TypeID = obj._TypeID;
+                    }
                 }
 
                 isSpawned = true;

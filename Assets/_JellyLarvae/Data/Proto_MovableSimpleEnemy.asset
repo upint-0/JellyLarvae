@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aabb63306cd72049a77427a810c202f, type: 3}
   m_Name: Proto_MovableSimpleEnemy
   m_EditorClassIdentifier: 
-  _BaseLevel: 5
+  _MinBaseLevel: 5
+  _MaxBaseLevel: 8
   _Point: 1
+  _Damage: 2
   _Speed: 450
   _AngularSpeed: 5
   _RangePlayerDetection: 4
@@ -21,3 +23,4 @@ MonoBehaviour:
   _ObstaclesLayer:
     serializedVersion: 2
     m_Bits: 128
+  _IsEatingJelly: 1

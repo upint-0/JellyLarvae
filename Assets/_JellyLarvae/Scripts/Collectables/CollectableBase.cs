@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class CollectableBase : MonoBehaviour
 {
+    public int _TypeID;
     protected virtual void Collect()
     {
-        
+        CollectableManager._Instance.RemoveCollectable(_TypeID);
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
