@@ -8,6 +8,7 @@ using UnityEngine;
 public class GraphDataViewer : MonoBehaviour
 {
     public string _DataPath = "/_PropertyRecorder";
+    public int _ReadIndex = 0;
     public GraphData _Data;
     private LineRenderer _LineRenderer;
     
@@ -21,10 +22,10 @@ public class GraphDataViewer : MonoBehaviour
         _Data = PropertyRecorder.DecompressGraphDataJson(_DataPath);
         if (!_LineRenderer) _LineRenderer = GetComponent<LineRenderer>();
 
-        _LineRenderer.positionCount = _Data._Keyframe.Count;
-        for (int i = 0; i < _Data._Keyframe.Count; i++)
+        _LineRenderer.positionCount = _Data._PropertiesData[_ReadIndex]._Keyframe.Count;
+        for (int i = 0; i < _Data._PropertiesData[_ReadIndex]._Keyframe.Count; i++)
         {
-            Vector2 pos = new Vector2(_Data._Keyframe[i] * _WidthScale, _Data._KeyframeValue[i] * _HeightsScale);
+            Vector2 pos = new Vector2(_Data._PropertiesData[_ReadIndex]._Keyframe[i] * _WidthScale, _Data._PropertiesData[_ReadIndex]._KeyframeValue[i] * _HeightsScale);
             _LineRenderer.SetPosition(i, pos.toVec3());
         }
     }
@@ -33,9 +34,9 @@ public class GraphDataViewer : MonoBehaviour
     {
         if (_Data == null || !_LineRenderer) return;
         
-        for (int i = 0; i < _Data._Keyframe.Count; i++)
+        for (int i = 0; i < _Data._PropertiesData[_ReadIndex]._Keyframe.Count; i++)
         {
-            Vector2 pos = new Vector2(_Data._Keyframe[i] * _WidthScale, _Data._KeyframeValue[i] * _HeightsScale);
+            Vector2 pos = new Vector2(_Data._PropertiesData[_ReadIndex]._Keyframe[i] * _WidthScale, _Data._PropertiesData[_ReadIndex]._KeyframeValue[i] * _HeightsScale);
             _LineRenderer.SetPosition(i, pos.toVec3());
         }
     }

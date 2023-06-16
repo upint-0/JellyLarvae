@@ -38,6 +38,13 @@ public class PropertyRecorder : MonoBehaviour
 [System.Serializable]
 public class GraphData
 {
+    public List<PropertyData> _PropertiesData = new List<PropertyData>();
+}
+
+[System.Serializable]
+public class PropertyData
+{
+    public string _PropertyName;
     public List<float> _Keyframe= new List<float>();
     public List<float> _KeyframeValue = new List<float>();
 }

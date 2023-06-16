@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.EditorCoroutines.Editor;
 using Unity.VisualScripting;
@@ -20,7 +21,8 @@ public class PropertyRecorderWindow : EditorWindow
     private Object _Source;
     private string _ComponentName;
     private string _FieldName;
-    
+
+    private bool _AddPropertyToRecordPanel;
     private Vector2 _RecordPanelScrollPos;
     private Vector2 _ViewPanelScrollPos;
     
@@ -40,32 +42,65 @@ public class PropertyRecorderWindow : EditorWindow
         
     }
 
+    private void ResetValue()
+    {
+        _ComponentAttached = new List<Component>();
+        _PropertyInfo = new List<PropertyInfo>();
+    }
+
     private const float _RecordPanelWidth = 400f;
     private void DrawRecordPanel()
     {
         GUILayout.BeginVertical();
         _RecordPanelScrollPos = GUILayout.BeginScrollView(_RecordPanelScrollPos, GUILayout.Width(_RecordPanelWidth));
-        
-        GUILayout.Label("Object to observe : ");
-        _Source = EditorGUILayout.ObjectField(_Source, typeof(Object), true);
-        GUILayout.Label("Component Name : ");
-        _ComponentName = GUILayout.TextField(_ComponentName);
-        GUILayout.Label("Variable Name : ");
-        _FieldName = GUILayout.TextField(_FieldName);
 
-        if (GUILayout.Button("Select Variable"))
+        if (_ComponentAttached.Count() > 0)
         {
-            _PropertyFinded = SelectVariable();
+            if (GUILayout.Button("Reset"))
+            {
+                ResetValue();
+            }
+        }
+        if (_PropertyInfo.Count > 0)
+        {
+            foreach (var info in _PropertyInfo)
+            {
+                GUILayout.Label("property : " +info.Name);
+            }
+        }
+        if (!_AddPropertyToRecordPanel)
+        {
+            if (GUILayout.Button("Add property to record"))
+            {
+                _AddPropertyToRecordPanel = true;
+            }
         }
 
-        if (_PropertyFinded)
+        if (_AddPropertyToRecordPanel)
         {
-            GUILayout.Label("Property is valid");
+            GUILayout.Label("Object to observe : ");
+            _Source = EditorGUILayout.ObjectField(_Source, typeof(Object), true);
+            GUILayout.Label("Component Name : ");
+            _ComponentName = GUILayout.TextField(_ComponentName);
+            GUILayout.Label("Variable Name : ");
+            _FieldName = GUILayout.TextField(_FieldName);
+
+            if (GUILayout.Button("Select Variable"))
+            {
+                _PropertyFinded = SelectVariable();
+            }
+
+            if (_PropertyFinded)
+            {
+                GUILayout.Label("Property is valid");
+
+            }
+            else
+            {
+                GUILayout.Label("Property Not Finded");
+            }
         }
-        else
-        {
-            GUILayout.Label("Property Not Finded");
-        }
+
         
         GUILayout.Space(10f);
         GUILayout.Label("Time step : ");
@@ -73,7 +108,7 @@ public class PropertyRecorderWindow : EditorWindow
         GUILayout.Space(10f);
         GUILayout.Label("File path : ");
         _FilePath = GUILayout.TextField(_FilePath);
-        GUILayout.Label("File path : ");
+        GUILayout.Label("File name : ");
         _FileName = GUILayout.TextField(_FileName);
         
         GUILayout.Space(10f);
@@ -95,11 +130,25 @@ public class PropertyRecorderWindow : EditorWindow
         }
         GUILayout.Space(100f);
         _StrechToWindow = GUILayout.Toggle(_StrechToWindow, "Stretch to window");
-        _StepValue = EditorGUILayout.IntSlider(_StepValue, 1, 200);
+        _StepValue = EditorGUILayout.IntSlider(_StepValue, 1, 600);
         _GraphObjectLoaded = EditorGUILayout.ObjectField(_GraphObjectLoaded, typeof(Object), false);
         if (GUILayout.Button("Load data"))
         {
             LoadData();
+        }
+
+        GUILayout.Space(10f);
+        if (_IsLoaded)
+        {
+            for (int i = 0; i < _GraphLoaded._PropertiesData.Count(); i++)
+            {
+                if(_ViewPropertyGraph.Count() <= i) _ViewPropertyGraph.Add(true);
+                
+                Color color = GraphStyle.GetColorByIndex(i);
+                GraphStyle.GuiLine(color, 10);
+                _ViewPropertyGraph[i] = GUILayout.Toggle(_ViewPropertyGraph[i],
+                    _GraphLoaded._PropertiesData[i]._PropertyName + " values");
+            }
         }
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
@@ -109,10 +158,10 @@ public class PropertyRecorderWindow : EditorWindow
     private Object _GraphObjectLoaded;
     private GraphData _GraphLoaded;
     
-    private float[] _DataValues;
+    //private float[] _DataValues;
 
     private float _GraphMinValue = 0f;
-    private float _GraphMaxValue = 0f;
+    private float[] _GraphMaxValue;
     private float _GraphHeight = 400f;
     private float _GraphWidth = 400f;
     private bool _StrechToWindow = true;
@@ -121,18 +170,23 @@ public class PropertyRecorderWindow : EditorWindow
     
     private const float _CaseMinWidth = 10f;
     private bool _IsLoaded = false;
+
+    private List<bool> _ViewPropertyGraph = new List<bool>();
     private void LoadData()
     {
         Debug.Log("Load data");
         _GraphLoaded = PropertyRecorder.DecompressGraphDataJson(_GraphObjectLoaded);
-        _DataValues = _GraphLoaded._KeyframeValue.ToArray();
-        _GraphMaxValue = 0f;
-        for (int i = 0; i < _GraphLoaded._KeyframeValue.Count; i++)
+        //_DataValues = _GraphLoaded._KeyframeValue.ToArray();
+        _GraphMaxValue = new float[_GraphLoaded._PropertiesData.Count];
+        for (int y = 0; y < _GraphMaxValue.Count(); y++)
         {
-            if (_GraphMaxValue < _GraphLoaded._KeyframeValue[i]) _GraphMaxValue = _GraphLoaded._KeyframeValue[i];
+            for (int i = 0; i < _GraphLoaded._PropertiesData[y]._KeyframeValue.Count; i++)
+            {
+                if (_GraphMaxValue[y] < _GraphLoaded._PropertiesData[y]._KeyframeValue[i]) _GraphMaxValue[y] = _GraphLoaded._PropertiesData[y]._KeyframeValue[i];
+            }
         }
 
-        _RecordMaxTime = _GraphLoaded._Keyframe[^1];
+        _RecordMaxTime = _GraphLoaded._PropertiesData[0]._Keyframe[^1];
         _IsLoaded = true;
     }
     private void DrawViewerPanel()
@@ -142,14 +196,15 @@ public class PropertyRecorderWindow : EditorWindow
 
         if (_IsLoaded && _GraphLoaded != null)
         {
-            float caseWidth = Mathf.Max(_GraphWidth / _DataValues.Length, _CaseMinWidth);
-            float graphWidth = caseWidth * (_DataValues.Length / (float)_StepValue);
+            int dataCount = _GraphLoaded._PropertiesData[0]._Keyframe.Count;
+            float caseWidth = Mathf.Max(_GraphWidth / dataCount, _CaseMinWidth);
+            float graphWidth = caseWidth * (dataCount / (float)_StepValue);
 
             int step = _StepValue;
             if (_StrechToWindow)
             {
                 graphWidth = position.width - _RecordPanelWidth - 20f;
-                step = Mathf.RoundToInt(_DataValues.Length / (graphWidth/ caseWidth));
+                step = Mathf.RoundToInt(dataCount / (graphWidth/ caseWidth));
             }
             Rect graphRect = GUILayoutUtility.GetRect(graphWidth, position.height - 40f);
             //GUI.Box(new Rect(10f,10f, _GraphWidth, _GraphHeight), "");
@@ -157,26 +212,40 @@ public class PropertyRecorderWindow : EditorWindow
             _GraphHeight = graphRect.height;
             GUI.Box(graphRect, "");
 
-            
-            for (int i = 0; i < _DataValues.Length; i += step)
-            {
-                int index = i / step;
-                float normalizedValue = Mathf.InverseLerp(_GraphMinValue, _GraphMaxValue, _DataValues[i]);
-                //float xPos = (i / (float)(dataValues.Length - 1)) * (_GraphWidth - 20f);
-                float xPos = index * caseWidth;
-                float yPos = 10f + _GraphHeight - (normalizedValue * (_GraphHeight - 20f));
-                
-                GUI.color = new Color(0.5f,0.94f,0.675f);
-                GUI.Box(new Rect(xPos, yPos, caseWidth, (_GraphHeight -20f) * normalizedValue), "", GraphStyle.BoxStyle(new Color(0.5f,0.94f,0.675f)));
-            }
-
             float xMousePos = Event.current.mousePosition.x;
             float normaliedXPos = Mathf.Clamp01((xMousePos - position.x) / graphRect.width);
-            int readIndex = Mathf.RoundToInt(normaliedXPos * (_DataValues.Length - 1));
-            string debugText = "t : " + (normaliedXPos * _RecordMaxTime / 360f) + "s Value : " + _DataValues[readIndex];
+            int readIndex = Mathf.RoundToInt(normaliedXPos * (dataCount - 1));
+            string debugText = "t : " + (normaliedXPos * _RecordMaxTime / 360f) + "s ";
+
+            
+            for (int j = 0; j < _GraphLoaded._PropertiesData.Count(); j++)
+            {
+                if (!_ViewPropertyGraph[j]) continue;
+                PropertyData data = _GraphLoaded._PropertiesData[j];
+                
+                for (int i = 0; i < dataCount; i += step)
+                {
+                    int index = i / step;
+                    float normalizedValue = Mathf.InverseLerp(_GraphMinValue, _GraphMaxValue[j], data._KeyframeValue[i]);
+                    //float xPos = (i / (float)(dataValues.Length - 1)) * (_GraphWidth - 20f);
+                    float xPos = index * caseWidth;
+                    float yPos = 10f + _GraphHeight - (normalizedValue * (_GraphHeight - 20f));
+
+                    Color color = GraphStyle.GetColorByIndex(j);
+                    GUI.color = color;
+                    GUI.Box(new Rect(xPos, yPos, caseWidth, (_GraphHeight -20f) * normalizedValue), "", GraphStyle.BoxStyle(color));
+                }
+
+                debugText += _GraphLoaded._PropertiesData[j]._PropertyName + " : " + _GraphLoaded._PropertiesData[j]._KeyframeValue[readIndex] + " ";
+            }
+            
+            
+
+           
             GUI.color = Color.white;
             GUI.Box(new Rect(graphRect.position.x, graphRect.position.y, graphRect.width, 36f), debugText, GraphStyle.ToolbarStyle(new Color(0.15f,0.15f,0.15f)));
-            GUI.Box(new Rect(xMousePos, 36f, 0.2f , _GraphHeight - 36f), "", GraphStyle.BoxStyle(Color.red));
+            //GUI.Box(new Rect(xMousePos, 36f, 0.02f , _GraphHeight - 36f), "", GraphStyle.BoxStyle(Color.red));
+            EditorGUI.DrawRect(new Rect(xMousePos, 36f, 2f , _GraphHeight), Color.red);
         }
         else
         {
@@ -189,8 +258,8 @@ public class PropertyRecorderWindow : EditorWindow
     
     private GraphData _GraphData;
     private EditorCoroutine _RecordCoroutine;
-    private PropertyInfo _PropertyInfo;
-    private Component _ComponentAttached;
+    private List<PropertyInfo> _PropertyInfo = new List<PropertyInfo>();
+    private List<Component> _ComponentAttached = new List<Component>();
 
     private bool SelectVariable()
     {
@@ -217,9 +286,10 @@ public class PropertyRecorderWindow : EditorWindow
                 
                 if (propertyInfo != null)
                 {
-                    _PropertyInfo = propertyInfo;
-                    _ComponentAttached = c;
-                    Debug.Log("Property finded");
+                    _PropertyInfo.Add(propertyInfo);
+                    _ComponentAttached.Add(c);
+                    Debug.Log("Property finded" + propertyInfo + " " + c);
+                    _AddPropertyToRecordPanel = false;
                     return true;
                 }
                 else
@@ -243,7 +313,10 @@ public class PropertyRecorderWindow : EditorWindow
     private void StartRecord()
     {
         _GraphData = new GraphData();
-        
+        for (int i = 0; i < _PropertyInfo.Count(); i++)
+        {
+            _GraphData._PropertiesData.Add(new PropertyData());
+        }
         _RecordCoroutine = EditorCoroutineUtility.StartCoroutineOwnerless(
             RecordCoroutine(_GraphData, _TimeStep));
     }
@@ -253,7 +326,13 @@ public class PropertyRecorderWindow : EditorWindow
         if (_RecordCoroutine != null)
         {
             EditorCoroutineUtility.StopCoroutine(_RecordCoroutine);
-            PropertyRecorder.SaveGraphToJson(_GraphData, _FilePath,_FileName + "_"+ _PropertyInfo.Name);
+            string fileName = _FileName;
+
+            for (int i = 0; i < _PropertyInfo.Count(); i++)
+            {
+                fileName += "_" + _PropertyInfo[i].Name;
+            }
+            PropertyRecorder.SaveGraphToJson(_GraphData, _FilePath,fileName);
         }
     }
 
@@ -267,28 +346,42 @@ public class PropertyRecorderWindow : EditorWindow
         while (_Record && _PropertyFinded)
         {
             yield return new WaitForSeconds(timeStep);
-            Debug.Log("SaveData");
-            if (data._Keyframe.Count > 0)
+            
+
+            for (int i = 0; i < data._PropertiesData.Count; i++)
             {
-                float previousKeytime = data._Keyframe[^1];
-                data._Keyframe.Add(previousKeytime + timeStep);
-            }
-            else
-            {
-                data._Keyframe.Add(timeStep);
+                
+                if (data._PropertiesData[i]._Keyframe.Count > 0)
+                {
+                    float previousKeytime = data._PropertiesData[i]._Keyframe[^1];
+                    data._PropertiesData[i]._Keyframe.Add(previousKeytime + timeStep);
+                }
+                else
+                {
+                    data._PropertiesData[i]._Keyframe.Add(timeStep);
+                }
+                
+                
+                object value = _PropertyInfo[i].GetValue(_ComponentAttached[i]);
+                
+                float fValue = 5f;
+            
+                if (value is float)
+                {
+                    fValue = (float)value;
+                } else if (value is int)
+                {
+                    fValue = Convert.ToSingle((int)value);
+                }
+                else
+                {
+                    Debug.LogError("Unsupported type " + value.GetType());
+                }
+
+                data._PropertiesData[i]._PropertyName = _PropertyInfo[i].Name;
+                data._PropertiesData[i]._KeyframeValue.Add(fValue);
             }
 
-            object value = _PropertyInfo.GetValue(_ComponentAttached);
-            float fValue = 5f;
-            
-            if (value is float)
-            {
-                fValue = (float)value;
-            } else if (value is int)
-            {
-                fValue = (float) ((int)value);
-            }
-            data._KeyframeValue.Add(fValue);
         }
     }
 }

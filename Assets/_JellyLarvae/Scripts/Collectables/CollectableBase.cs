@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CollectableBase : MonoBehaviour
 {
-    public int _TypeID;
+    [HideInInspector]public int _TypeID;
     protected virtual void Collect()
     {
         CollectableManager._Instance.RemoveCollectable(_TypeID);
