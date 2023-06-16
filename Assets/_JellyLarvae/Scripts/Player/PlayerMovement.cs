@@ -123,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
         {
             float speed = distance_to_mouse.Remap(
                 PlayerAttributes.StopDistance,
-                Camera.main.orthographicSize * 2.0f,
+                (Camera.main.orthographicSize * 2.0f)/4.0f,
                 CurrentMinSpeed,
                 CurrentMaxSpeed
                 );
