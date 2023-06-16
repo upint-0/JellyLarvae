@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 public class PropertyRecorder : MonoBehaviour
@@ -10,7 +11,7 @@ public class PropertyRecorder : MonoBehaviour
     public static void SaveGraphToJson(GraphData data,string filePath, string fileName)
     {
         string graph = JsonUtility.ToJson(data);
-        string path = Application.persistentDataPath + filePath;
+        string path = Application.dataPath + filePath;
         Debug.Log(path);
         System.IO.FileInfo file = new System.IO.FileInfo(path);
         if (file.Directory != null) file.Directory.Create();
@@ -19,8 +20,16 @@ public class PropertyRecorder : MonoBehaviour
 
     public static GraphData DecompressGraphDataJson(string filePath)
     {
-        string absolutePath = Application.persistentDataPath + filePath;
+        string absolutePath = Application.dataPath + filePath;
         string serializedData = System.IO.File.ReadAllText(absolutePath);
+        GraphData data = JsonUtility.FromJson<GraphData>(serializedData);
+        return data;
+    }
+    public static GraphData DecompressGraphDataJson(Object obj)
+    {
+        string filePath = AssetDatabase.GetAssetPath(obj);
+        //string absolutePath = Application.persistentDataPath + filePath;
+        string serializedData = System.IO.File.ReadAllText(filePath);
         GraphData data = JsonUtility.FromJson<GraphData>(serializedData);
         return data;
     }

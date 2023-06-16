@@ -21,6 +21,9 @@ public class PropertyRecorderWindow : EditorWindow
     private string _ComponentName;
     private string _FieldName;
     
+    private Vector2 _RecordPanelScrollPos;
+    private Vector2 _ViewPanelScrollPos;
+    
     [MenuItem("Window/Tool/PropertyRecorder")]
     public static void ShowWindow()
     {
@@ -30,6 +33,19 @@ public class PropertyRecorderWindow : EditorWindow
 
     private void OnGUI()
     {
+        GUILayout.BeginHorizontal();
+        DrawRecordPanel();
+        DrawViewerPanel();
+        GUILayout.EndHorizontal();
+        
+    }
+
+    private const float _RecordPanelWidth = 400f;
+    private void DrawRecordPanel()
+    {
+        GUILayout.BeginVertical();
+        _RecordPanelScrollPos = GUILayout.BeginScrollView(_RecordPanelScrollPos, GUILayout.Width(_RecordPanelWidth));
+        
         GUILayout.Label("Object to observe : ");
         _Source = EditorGUILayout.ObjectField(_Source, typeof(Object), true);
         GUILayout.Label("Component Name : ");
@@ -77,9 +93,100 @@ public class PropertyRecorderWindow : EditorWindow
                 StopCoroutine();
             }
         }
-        
+        GUILayout.Space(100f);
+        _StrechToWindow = GUILayout.Toggle(_StrechToWindow, "Stretch to window");
+        _StepValue = EditorGUILayout.IntSlider(_StepValue, 1, 200);
+        _GraphObjectLoaded = EditorGUILayout.ObjectField(_GraphObjectLoaded, typeof(Object), false);
+        if (GUILayout.Button("Load data"))
+        {
+            LoadData();
+        }
+        GUILayout.EndScrollView();
+        GUILayout.EndVertical();
     }
 
+    // GRAPH
+    private Object _GraphObjectLoaded;
+    private GraphData _GraphLoaded;
+    
+    private float[] _DataValues;
+
+    private float _GraphMinValue = 0f;
+    private float _GraphMaxValue = 0f;
+    private float _GraphHeight = 400f;
+    private float _GraphWidth = 400f;
+    private bool _StrechToWindow = true;
+    private int _StepValue = 80;
+    private float _RecordMaxTime;
+    
+    private const float _CaseMinWidth = 10f;
+    private bool _IsLoaded = false;
+    private void LoadData()
+    {
+        Debug.Log("Load data");
+        _GraphLoaded = PropertyRecorder.DecompressGraphDataJson(_GraphObjectLoaded);
+        _DataValues = _GraphLoaded._KeyframeValue.ToArray();
+        _GraphMaxValue = 0f;
+        for (int i = 0; i < _GraphLoaded._KeyframeValue.Count; i++)
+        {
+            if (_GraphMaxValue < _GraphLoaded._KeyframeValue[i]) _GraphMaxValue = _GraphLoaded._KeyframeValue[i];
+        }
+
+        _RecordMaxTime = _GraphLoaded._Keyframe[^1];
+        _IsLoaded = true;
+    }
+    private void DrawViewerPanel()
+    {
+        GUILayout.BeginVertical();
+        _ViewPanelScrollPos = EditorGUILayout.BeginScrollView(_ViewPanelScrollPos, GUILayout.Height(_GraphHeight + 20f));
+
+        if (_IsLoaded && _GraphLoaded != null)
+        {
+            float caseWidth = Mathf.Max(_GraphWidth / _DataValues.Length, _CaseMinWidth);
+            float graphWidth = caseWidth * (_DataValues.Length / (float)_StepValue);
+
+            int step = _StepValue;
+            if (_StrechToWindow)
+            {
+                graphWidth = position.width - _RecordPanelWidth - 20f;
+                step = Mathf.RoundToInt(_DataValues.Length / (graphWidth/ caseWidth));
+            }
+            Rect graphRect = GUILayoutUtility.GetRect(graphWidth, position.height - 40f);
+            //GUI.Box(new Rect(10f,10f, _GraphWidth, _GraphHeight), "");
+            _GraphWidth = graphRect.width;
+            _GraphHeight = graphRect.height;
+            GUI.Box(graphRect, "");
+
+            
+            for (int i = 0; i < _DataValues.Length; i += step)
+            {
+                int index = i / step;
+                float normalizedValue = Mathf.InverseLerp(_GraphMinValue, _GraphMaxValue, _DataValues[i]);
+                //float xPos = (i / (float)(dataValues.Length - 1)) * (_GraphWidth - 20f);
+                float xPos = index * caseWidth;
+                float yPos = 10f + _GraphHeight - (normalizedValue * (_GraphHeight - 20f));
+                
+                GUI.color = new Color(0.5f,0.94f,0.675f);
+                GUI.Box(new Rect(xPos, yPos, caseWidth, (_GraphHeight -20f) * normalizedValue), "", GraphStyle.BoxStyle(new Color(0.5f,0.94f,0.675f)));
+            }
+
+            float xMousePos = Event.current.mousePosition.x;
+            float normaliedXPos = Mathf.Clamp01((xMousePos - position.x) / graphRect.width);
+            int readIndex = Mathf.RoundToInt(normaliedXPos * (_DataValues.Length - 1));
+            string debugText = "t : " + (normaliedXPos * _RecordMaxTime / 360f) + "s Value : " + _DataValues[readIndex];
+            GUI.color = Color.white;
+            GUI.Box(new Rect(graphRect.position.x, graphRect.position.y, graphRect.width, 36f), debugText, GraphStyle.ToolbarStyle(new Color(0.15f,0.15f,0.15f)));
+            GUI.Box(new Rect(xMousePos, 36f, 0.2f , _GraphHeight - 36f), "", GraphStyle.BoxStyle(Color.red));
+        }
+        else
+        {
+            GUILayout.Label("Load data ...");
+        }
+        EditorGUILayout.EndScrollView();
+        GUILayout.EndVertical();
+    }
+    
+    
     private GraphData _GraphData;
     private EditorCoroutine _RecordCoroutine;
     private PropertyInfo _PropertyInfo;
