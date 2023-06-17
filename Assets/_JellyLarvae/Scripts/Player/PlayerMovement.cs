@@ -31,6 +31,106 @@ public class PlayerMovement : MonoBehaviour
     public float CurrentMinSpeed => _CurrentMinSpeed.Value;
     public float CurrentMaxSpeed => _CurrentMaxSpeed.Value;
     public float CurrentDashForce => _CurrentDashForce.Value;
+    
+    #region JellyLogic
+
+    private void EnterJelly()
+    {
+        _rigidbody2D.gravityScale = 0.0f;
+        if(!_inJelly)_playerEffect.EnterInJelly();
+
+        _inJelly = true;
+        if (DebugMode)
+            _renderer.color = Color.green;
+    }
+
+    private void ExitJelly()
+    {
+        _rigidbody2D.gravityScale = PlayerAttributes.GravityScale;
+        if(_inJelly)_playerEffect.ExitOutJelly();
+        
+        _inJelly = false;
+        if (DebugMode)
+            _renderer.color = Color.red;
+    }
+
+    private bool DetectJelly()
+    {
+        var position = transform.position;
+        Debug.DrawRay(position - (transform.right * PlayerAttributes.EatOffset), Vector3.up, Color.blue);
+        
+        // :TODO: move this logic somewhere else
+        bool eating = _rigidbody2D.velocity.magnitude > 1.0f;
+
+        return (Jelly.GetJellyValueAtPosition( position, eating, position - (transform.right * PlayerAttributes.EatOffset), PlayerAttributes.EatRadius) > PlayerAttributes.JellyDetectionThreshold);
+    }
+
+    #endregion
+
+    #region Movements
+
+    #region Dash
+
+    private void HandleDash()
+    {
+        if (Input.GetMouseButtonDown(1) && _dashRoutine == null)
+        {
+            _dashRoutine = StartCoroutine(DashSlomoRoutine());
+        }
+    }
+
+    private IEnumerator DashSlomoRoutine()
+    {
+        float timer = 0.0f;
+        Camera main_camera = Camera.main;;
+        
+        Time.timeScale = PlayerAttributes.DashSlomoScale;
+        float base_orthographic_size = main_camera.orthographicSize;
+
+        while (!Input.GetMouseButtonUp(1) && timer < PlayerAttributes.DashSlomoTiming)
+        {
+            timer += Time.deltaTime * (1 / PlayerAttributes.DashSlomoScale);
+            main_camera.orthographicSize = Mathf.Lerp(
+                base_orthographic_size,
+                6.0f,
+                timer / PlayerAttributes.DashSlomoTiming
+                );
+            yield return null;
+        }
+
+        main_camera.orthographicSize = base_orthographic_size;
+        Time.timeScale = 1.0f;
+        
+        yield return Dash();
+    }
+
+    private IEnumerator Dash()
+    {
+        _rigidbody2D.AddForce(_direction * CurrentDashForce, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(PlayerAttributes.DashCoolDown);
+        _dashRoutine = null;
+    }
+
+    #endregion
+
+    private void HandleMovements(float distance_to_mouse)
+    {
+        if (!Input.GetMouseButton(0) && distance_to_mouse > PlayerAttributes.StopDistance)
+        {
+            float speed = distance_to_mouse.Remap(
+                PlayerAttributes.StopDistance,
+                (Camera.main.orthographicSize * 2.0f)/4.0f,
+                CurrentMinSpeed,
+                CurrentMaxSpeed
+            );
+            
+            _rigidbody2D.AddForce(_direction * (speed * Time.fixedDeltaTime), ForceMode2D.Force);
+        }
+    }
+
+    #endregion
+
+    #region Unity
 
     private void Awake()
     {
@@ -71,64 +171,6 @@ public class PlayerMovement : MonoBehaviour
         HandleMovements(distance_to_mouse);
     }
 
-    private void EnterJelly()
-    {
-        _rigidbody2D.gravityScale = 0.0f;
-        if(!_inJelly)_playerEffect.EnterInJelly();
-
-        _inJelly = true;
-        if (DebugMode)
-            _renderer.color = Color.green;
-    }
-
-    private void ExitJelly()
-    {
-        _rigidbody2D.gravityScale = PlayerAttributes.GravityScale;
-        if(_inJelly)_playerEffect.ExitOutJelly();
-        
-        _inJelly = false;
-        if (DebugMode)
-            _renderer.color = Color.red;
-    }
-
-    private bool DetectJelly()
-    {
-        var position = transform.position;
-        Debug.DrawRay(position - (transform.right * PlayerAttributes.EatOffset), Vector3.up, Color.blue);
-        
-        // :TODO: move this logic somewhere else
-        bool eating = _rigidbody2D.velocity.magnitude > 1.0f;
-
-        return (Jelly.GetJellyValueAtPosition( position, eating, position - (transform.right * PlayerAttributes.EatOffset), PlayerAttributes.EatRadius) > PlayerAttributes.JellyDetectionThreshold);
-    }
-
-    private void HandleDash()
-    {
-        if (Input.GetMouseButtonDown(1) && _dashRoutine == null)
-        {
-            _dashRoutine = StartCoroutine(Dash());
-        }
-    }
-
-    private IEnumerator Dash()
-    {
-        _rigidbody2D.AddForce(_direction * CurrentDashForce, ForceMode2D.Impulse);
-        yield return new WaitForSeconds(PlayerAttributes.DashCoolDown);
-        _dashRoutine = null;
-    }
-
-    private void HandleMovements(float distance_to_mouse)
-    {
-        if (Input.GetMouseButton(0) && distance_to_mouse > PlayerAttributes.StopDistance)
-        {
-            float speed = distance_to_mouse.Remap(
-                PlayerAttributes.StopDistance,
-                (Camera.main.orthographicSize * 2.0f)/4.0f,
-                CurrentMinSpeed,
-                CurrentMaxSpeed
-                );
-            
-            _rigidbody2D.AddForce(_direction * (speed * Time.fixedDeltaTime), ForceMode2D.Force);
-        }
-    }
+    #endregion
+    
 }
