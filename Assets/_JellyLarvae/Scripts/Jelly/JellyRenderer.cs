@@ -189,6 +189,8 @@ public class JellyRenderer : MonoBehaviour
         
         Draw(mousePosWS);
         
+        _ComputeShaderJellyMask.SetFloat("deltaTime", Time.deltaTime);
+        
         _ComputeShaderJellyMask.SetBuffer(_MainKernel, "_PlayerInfos", _PlayerInfosBuffer);
         _ComputeShaderJellyMask.SetBuffer(_MainKernel, "_PointsInfos", _PointsInfosBuffer);
         

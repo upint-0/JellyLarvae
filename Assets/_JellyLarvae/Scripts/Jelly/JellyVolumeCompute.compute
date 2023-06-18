@@ -1,12 +1,10 @@
+/// KERNEL DECLARATION 
 #pragma kernel CSMain
 #pragma kernel CSInit
 #pragma kernel CSRemoveJellyByMask
 #pragma kernel CSReadAndWriteJelly
 
-RWTexture2D<float4> _JellyMask;
-Texture2D<float4> _JellyMaskSource;
-Texture2D<float> _ObstaclesMask;
-
+// STRUCT
 struct pointInfos
 {
     int id;
@@ -20,12 +18,16 @@ struct JellyReader
     float eatRadius;
     float2 eatPosition;
 };
+// BUFFER & TEXTURE
+RWTexture2D<float4> _JellyMask;
+Texture2D<float4> _JellyMaskSource;
+Texture2D<float> _ObstaclesMask;
 
 StructuredBuffer<JellyReader> _PlayerInfos;
 StructuredBuffer<JellyReader> _JellyReaders;
 RWStructuredBuffer<pointInfos> _PointsInfos;
 RWStructuredBuffer<pointInfos> _JellyReadersOut;
-
+// VARS
 int _JellyReadersCount;
 
 float4 _BrushSettings;
@@ -33,10 +35,14 @@ float4 _CanvasSettings;
 float2 _TextureSize;
 
 float2 playerPos;
+// WORLD VAR 
+float deltaTime;
 
+// CONST
 #define DETECT_RADIUS 0.5
 #define EAT_RADIUS 0
 #define BLUR_SAMPLE 10
+#define EAT_STRENGTH 300
 
 [numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
@@ -103,7 +109,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             float eatDistance = (1- length(posWS - player.eatPosition)) / player.eatRadius;
             if(eatDistance > EAT_RADIUS)
             {
-                value.x = saturate(value.x - eatDistance);
+                value.x = saturate(value.x - (eatDistance * deltaTime * EAT_STRENGTH));
             }
         }
         
