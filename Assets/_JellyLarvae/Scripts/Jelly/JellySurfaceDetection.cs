@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static JellyRenderer;
 
@@ -11,12 +12,15 @@ public class JellySurfaceDetection : MonoBehaviour
     public bool _IsUpdating;
 
     [Min(1)] public int _MaximumReader = 256;
+    [Min(1)] public int _MaximumWriter = 10;
     [SerializeField] private JellyRenderer _JellyRenderer;
     
     private Dictionary<int, JellyReader> _JellyReaders = new Dictionary<int, JellyReader>();
+    private Dictionary<int, JellyWriter> _JellyWriters = new Dictionary<int, JellyWriter>();
     private Dictionary<int, PointInfos> _ValueOfJellyReaders = new Dictionary<int, PointInfos>();
 
     private int _ReaderCount;
+    private int _WriterCount;
     private void Awake()
     {
         if (_Instance)
@@ -42,6 +46,26 @@ public class JellySurfaceDetection : MonoBehaviour
 
         _ReaderCount++;
     }
+
+    public void AddJellyWriter(int id, Vector2 pos, float radius)
+    {
+        JellyWriter jellyWriter = new JellyWriter() { position = pos, writeRadius = radius };
+        _JellyWriters.Add(id,jellyWriter);
+        _WriterCount++;
+    }
+
+    public void RemoveJellyWriter(int id)
+    {
+        _JellyWriters.Remove(id);
+        _WriterCount--;
+    }
+
+    public void UpdateJellyWriter(int id, Vector2 pos)
+    {
+        var jellyWriter = _JellyWriters[id];
+        jellyWriter.position = pos;
+        _JellyWriters[id] = jellyWriter;
+    }
     public void RemoveJellyReader(int id)
     {
         _JellyReaders.Remove(id);
@@ -61,11 +85,16 @@ public class JellySurfaceDetection : MonoBehaviour
 
     private void Update()
     {
+        if(_WriterCount > 0) WriteJelly();
         _IsUpdating = (_ReaderCount > 0);
         if (!_IsUpdating) return;
         UpdateJellyValue();
     }
 
+    private void WriteJelly()
+    {
+        _JellyRenderer.WriteJellyValue(_JellyWriters.Values.ToArray());
+    }
     public void UpdateJellyValue()
     {
         _PointInfos = _JellyRenderer.GetJellyValue(ref _JellyReaders);
