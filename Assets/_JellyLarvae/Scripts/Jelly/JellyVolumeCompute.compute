@@ -1,12 +1,11 @@
+/// KERNEL DECLARATION 
 #pragma kernel CSMain
 #pragma kernel CSInit
 #pragma kernel CSRemoveJellyByMask
 #pragma kernel CSReadAndWriteJelly
+#pragma kernel CSWriteJelly
 
-RWTexture2D<float4> _JellyMask;
-Texture2D<float4> _JellyMaskSource;
-Texture2D<float> _ObstaclesMask;
-
+// STRUCT
 struct pointInfos
 {
     int id;
@@ -21,22 +20,39 @@ struct JellyReader
     float2 eatPosition;
 };
 
+struct JellyWriter
+{
+    float2 position;
+    float radius;
+};
+// BUFFER & TEXTURE
+RWTexture2D<float2> _JellyMask;
+Texture2D<float2> _JellyMaskSource;
+Texture2D<float> _ObstaclesMask;
+
 StructuredBuffer<JellyReader> _PlayerInfos;
 StructuredBuffer<JellyReader> _JellyReaders;
+StructuredBuffer<JellyWriter> _JellyWriter;
 RWStructuredBuffer<pointInfos> _PointsInfos;
 RWStructuredBuffer<pointInfos> _JellyReadersOut;
-
+// VARS
 int _JellyReadersCount;
+int _JellyWritersCount;
 
 float4 _BrushSettings;
 float4 _CanvasSettings;
 float2 _TextureSize;
 
 float2 playerPos;
+// WORLD VAR 
+float deltaTime;
 
+// CONST
 #define DETECT_RADIUS 0.5
 #define EAT_RADIUS 0
 #define BLUR_SAMPLE 10
+#define EAT_STRENGTH 300
+#define WRITE_STRENGTH 4
 
 [numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
@@ -72,11 +88,11 @@ float BlurObstacle(int2 id)
 [numthreads(8, 8, 1)]
 void CSRemoveJellyByMask(uint3 id : SV_DispatchThreadID)
 {
-    float4 value = _JellyMaskSource[id.xy];
-    //if(_ObstaclesMask[id.xy].x > 0.1)
-    {
-        value = min(value, 1 - BlurObstacle(id.xy));
-    }
+    float2 value = _JellyMaskSource[id.xy];
+
+    float obstacle = 1 - BlurObstacle(id.xy);
+    value = float2(min(value.x, obstacle), 1 - obstacle);
+    
     _JellyMask[id.xy] = value;
 }
 
@@ -85,7 +101,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 {
     float2 posWS = ((id.xy / _TextureSize) * _CanvasSettings.zw) + _CanvasSettings.xy - (_CanvasSettings.zw / 2);
 
-    float4 value = _JellyMask[id.xy];
+    float2 value = _JellyMask[id.xy];
     JellyReader player = _PlayerInfos[0];
     
     if (_BrushSettings.w > 0)
@@ -103,7 +119,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             float eatDistance = (1- length(posWS - player.eatPosition)) / player.eatRadius;
             if(eatDistance > EAT_RADIUS)
             {
-                value.x = saturate(value.x - eatDistance);
+                value.x = saturate(value.x - (eatDistance * deltaTime * EAT_STRENGTH));
             }
         }
         
@@ -113,7 +129,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         }
     }
     
-    value.w = 1;
     _JellyMask[id.xy] = value;
 }
 
@@ -135,3 +150,29 @@ void CSReadAndWriteJelly(uint3 id : SV_DispatchThreadID)
     _JellyReadersOut[index].id = reader.id;
     _JellyReadersOut[index].jellyValue = _JellyMask[checkPos].x;
 }
+
+[numthreads(64, 1, 1)]
+void CSWriteJelly(uint3 id : SV_DispatchThreadID)
+{
+    const int index = int(id.x);
+    if(_JellyWritersCount <= index) return;
+
+    const JellyWriter writer = _JellyWriter[index];
+    const int2 checkPos = ConvertWSToLocal(writer.position, _CanvasSettings.zw, _CanvasSettings.xy, _TextureSize);
+
+    const int radius = writer.radius;
+
+    for (int y = -radius; y <= radius; y++)
+    {
+        for (int x = -radius; x <= radius; x++)
+        {
+            const int2 currentPos = checkPos + int2(x, y);
+            const float dist = ((float) max(abs(x), abs(y))) / radius;
+            float value = saturate(_JellyMask[currentPos].x + (deltaTime * WRITE_STRENGTH * (1 - dist)));
+            _JellyMask[currentPos] = float2(min(value, 1 - _JellyMask[currentPos].y), _JellyMask[currentPos].y);
+        }
+    }
+    
+    //_JellyMask[checkPos] += deltaTime * WRITE_STRENGTH;
+}
+

@@ -31,7 +31,7 @@ public class JellyRenderer : MonoBehaviour
     [SerializeField] private SpriteRenderer _JellyRenderer;
     
     [Header("Texture settings")]
-    [SerializeField] [Range(0.1f,10f)]private float _TextureQuality = 1f;
+    [SerializeField] [Range(0.1f,20f)]private float _TextureQuality = 1f;
     [SerializeField] private Texture2D _MapSource;
     
     [Header("Save settings")]
@@ -50,23 +50,27 @@ public class JellyRenderer : MonoBehaviour
     private PointInfos _PlayerPosInfos = new PointInfos();
     private JellyReader _jellyReader = new JellyReader();
     private MaterialPropertyBlock _MaterialPropertyBlock;
-    
+
+    private bool _IsInit;
     private int _InitKernel;
     private int _MainKernel;
     private int _RemoveJellyByMaskKernel;
     private int _RAndWJellyKernel;
+    private int _WriteJellyKernel;
     private Vector3Uint _MainKernelGroupeSize = new Vector3Uint();
     private uint _ReaderKernelGroupSize;
+    private uint _WriterKernelGroupSize;
 
     private ComputeBuffer _PointsInfosBuffer;
     private ComputeBuffer _JellyReaderOutBuffer;
     private ComputeBuffer _PlayerInfosBuffer;
     private ComputeBuffer _JellyReaderBuffer;
-    
+    private ComputeBuffer _JellyWriterBuffer;
     #endregion
     #region Consts
     private const int POINT_INFOS_SIZEOF = sizeof(float) + sizeof(int);
     private const int PLAYER_INFOS_SIZEOF = (sizeof(float) * 4) + sizeof(Single) + sizeof(float)+ sizeof(int);
+    private const int WRITER_SIZEOF = (sizeof(float) * 3);
     #endregion
     #region Struct
     [Serializable]
@@ -83,6 +87,12 @@ public class JellyRenderer : MonoBehaviour
         public System.Single isEating;
         public float eatRadius;
         public Vector2 eatPosition;
+    }
+    [System.Serializable]
+    public struct JellyWriter
+    {
+        public Vector2 position;
+        public float writeRadius;
     }
     #endregion
 
@@ -127,22 +137,26 @@ public class JellyRenderer : MonoBehaviour
         
         _PlayerInfosBuffer = new ComputeBuffer(1, PLAYER_INFOS_SIZEOF);
         _JellyReaderBuffer = new ComputeBuffer(maxJellyReaderCount, PLAYER_INFOS_SIZEOF);
+        _JellyWriterBuffer = new ComputeBuffer(_JellySurfaceDetection._MaximumWriter, WRITER_SIZEOF);
 
         // Find kernel
         _InitKernel = _ComputeShaderJellyMask.FindKernel("CSInit");
         _MainKernel = _ComputeShaderJellyMask.FindKernel("CSMain");
         _RemoveJellyByMaskKernel = _ComputeShaderJellyMask.FindKernel("CSRemoveJellyByMask");
         _RAndWJellyKernel = _ComputeShaderJellyMask.FindKernel("CSReadAndWriteJelly");
+        _WriteJellyKernel = _ComputeShaderJellyMask.FindKernel("CSWriteJelly");
         
         _ComputeShaderJellyMask.GetKernelThreadGroupSizes(_MainKernel, out _MainKernelGroupeSize.x,out _MainKernelGroupeSize.y, out _MainKernelGroupeSize.z);
         _ComputeShaderJellyMask.GetKernelThreadGroupSizes(_RAndWJellyKernel, out _ReaderKernelGroupSize,out _, out _);
+        _ComputeShaderJellyMask.GetKernelThreadGroupSizes(_WriteJellyKernel, out _WriterKernelGroupSize,out _, out _);
         
         _ComputeShaderJellyMask.SetVector("_TextureSize", new Vector2(size.x, size.y));
 
         CopySourceMap();
+        _IsInit = true;
     }
     #endregion
-    #region Unint
+    #region Uninit
 
     [Button()]
     public void CopySourceMap()
@@ -166,7 +180,7 @@ public class JellyRenderer : MonoBehaviour
         string name = _TextureFileName + SceneManager.GetActiveScene().name;
         if (_NamingUseHorodatage) name += "_" + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss");
         if (overrideSourceMap) name = _MapSource.name + "_Obstacle";
-        _JellyMaskInstance.ExportToTexture2D(path, name,TextureUtils.Channel.R);
+        _JellyMaskInstance.ExportToTexture2D(path, name,TextureUtils.Channel.RG);
             
         Debug.Log("Save map !! Export to : " + path + name);
     }
@@ -177,6 +191,8 @@ public class JellyRenderer : MonoBehaviour
         _PlayerInfosBuffer.Release();
         _JellyReaderBuffer.Release();
         _JellyReaderOutBuffer.Release();
+        _JellyWriterBuffer.Release();
+        _IsInit = false;
     }
     #endregion
 
@@ -188,6 +204,8 @@ public class JellyRenderer : MonoBehaviour
         Vector2 mousePosWS = Camera.main.ScreenToWorldPoint(mousePos);
         
         Draw(mousePosWS);
+        
+        _ComputeShaderJellyMask.SetFloat("deltaTime", Time.deltaTime);
         
         _ComputeShaderJellyMask.SetBuffer(_MainKernel, "_PlayerInfos", _PlayerInfosBuffer);
         _ComputeShaderJellyMask.SetBuffer(_MainKernel, "_PointsInfos", _PointsInfosBuffer);
@@ -245,6 +263,20 @@ public class JellyRenderer : MonoBehaviour
         return _PlayerPosInfos.jellyValue;
     }
 
+    public void WriteJellyValue(JellyWriter[] jellyWriters)
+    {
+         if (!_IsInit) return;
+        int count = jellyWriters.Length;
+        _JellyWriterBuffer.SetCounterValue((uint)count);
+        _JellyWriterBuffer.SetData(jellyWriters);
+        
+        _ComputeShaderJellyMask.SetInt("_JellyWritersCount", count);
+        _ComputeShaderJellyMask.SetBuffer(_WriteJellyKernel, "_JellyWriter", _JellyWriterBuffer);
+        _ComputeShaderJellyMask.SetTexture(_WriteJellyKernel,"_JellyMask", _JellyMaskInstance);
+        
+        int dispatchSize = (int)(count / _WriterKernelGroupSize) + 1;
+        _ComputeShaderJellyMask.Dispatch(_WriteJellyKernel, dispatchSize, 1, 1);
+    }
     public PointInfos[] GetJellyValue(ref Dictionary<int, JellyReader> jellyReaders)
     {
         int count = jellyReaders.Count;

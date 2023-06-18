@@ -32,7 +32,7 @@ public class BaseEnemy : MonoBehaviour
     protected virtual void Start()
     {
         _PlayerRef = GameManager._Instance._Player;
-        EnemyManager._Instance.AddEnemy();
+        EnemyManager._Instance.AddEnemy(this);
 
     }
     
@@ -50,7 +50,7 @@ public class BaseEnemy : MonoBehaviour
 
     protected virtual void Death()
     {
-        EnemyManager._Instance.RemoveEnemy(_TypeID);
+        EnemyManager._Instance.RemoveEnemy(_TypeID, this);
         Destroy(gameObject);
     }
     private void OnCollisionEnter2D(Collision2D other)

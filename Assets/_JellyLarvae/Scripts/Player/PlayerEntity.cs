@@ -17,6 +17,7 @@ public class PlayerEntity : MonoBehaviour
     [Space]
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
+    [SerializeField] private PlayerEffect _PlayerEffect;
     public int CurrentLevel => _CurrentLevel;
     public float Test = 5f;
     public PlayerMovement _PlayerMvt;
@@ -37,10 +38,12 @@ public class PlayerEntity : MonoBehaviour
     private void Upgrade()
     {
         CameraFollowBehaviour._Instance.ImpulseZoom();
+        _PlayerEffect.Eat();
     }
     private void Downgrade()
     {
         CameraFollowBehaviour._Instance.PlayCameraShake();
+        _PlayerEffect.Damaged();
         if (_CurrentLevel <= 0)
         {
             Death();
@@ -92,6 +95,7 @@ public class PlayerEntity : MonoBehaviour
     public void CollectPoint(int point)
     {
         _CurrentLevel += point;
+        _PlayerEffect.Eat();
         RefreshLevel();
     }
 
