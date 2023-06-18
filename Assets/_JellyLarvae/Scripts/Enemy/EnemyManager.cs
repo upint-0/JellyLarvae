@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using static SpawnerHelper;
 using Random = UnityEngine.Random;
 
@@ -28,6 +26,13 @@ public class EnemyManager : MonoBehaviour
     public int EnemyCounter => _EnemyCounter;
     
     private int[] _EnemyCounterByType;
+    
+    #if PARTY_OBSERVER_MODE
+    private List<BaseEnemy> _EnemiesList= new List<BaseEnemy>();
+    public List<BaseEnemy> EnemiesList => _EnemiesList;
+    #endif
+    
+    
     #endregion
     private void Awake()
     {
@@ -88,14 +93,24 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void AddEnemy()
+    public void AddEnemy(BaseEnemy enemyRef)
     {
         _EnemyCounter++;
+        
+        #if PARTY_OBSERVER_MODE
+        _EnemiesList.Add(enemyRef);
+        if(PartyObserver._Instance) PartyObserver._Instance.RefreshEnemies();
+        #endif
     }
 
-    public void RemoveEnemy(int typeID)
+    public void RemoveEnemy(int typeID, BaseEnemy enemyRef)
     {
         _EnemyCounter--;
         _EnemyCounterByType[typeID]--;
+        
+        #if PARTY_OBSERVER_MODE
+        _EnemiesList.Remove(enemyRef);
+        if(PartyObserver._Instance) PartyObserver._Instance.RefreshEnemies();
+        #endif
     }
 }

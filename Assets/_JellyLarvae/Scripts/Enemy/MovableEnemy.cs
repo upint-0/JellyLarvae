@@ -39,7 +39,9 @@ public class MovableEnemy : BaseEnemy
     [SerializeField] private bool _IsAffectedByJelly = true;
     [SerializeField] private float _JellyGravity = 1;
     [SerializeField] private float _WorldGravity = 0.05f;
-    
+    [Header("Effect")]
+    [SerializeField] private GameObject _TrailEffect;
+
     protected override void Start()
     {
         base.Start();
@@ -52,6 +54,9 @@ public class MovableEnemy : BaseEnemy
             transform.position, 
             true, 
             5f);
+        
+        SwitchState(E_EnemyState.Track);
+        _TrailEffect.SetActive(false);
     }
 
     protected override void Death()
@@ -141,10 +146,13 @@ public class MovableEnemy : BaseEnemy
         switch (_CurrentState)
         {
             case E_EnemyState.Track:
+                _TrailEffect.SetActive(false);
                 break;
             case E_EnemyState.AvoidPlayer :
+                _TrailEffect.SetActive(true);
                 break;
             case E_EnemyState.RandomWalk :
+                _TrailEffect.SetActive(true);
                 _CurrentDir = Random.insideUnitCircle.normalized;
                 break;
             case E_EnemyState.Death : 

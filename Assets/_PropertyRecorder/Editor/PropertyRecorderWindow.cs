@@ -89,6 +89,10 @@ public class PropertyRecorderWindow : EditorWindow
             {
                 _PropertyFinded = SelectVariable();
             }
+            if (GUILayout.Button("Debug all properties"))
+            {
+                DebugAllPropetiesContains();
+            }
 
             if (_PropertyFinded)
             {
@@ -217,7 +221,13 @@ public class PropertyRecorderWindow : EditorWindow
             int readIndex = Mathf.RoundToInt(normaliedXPos * (dataCount - 1));
             string debugText = "t : " + (normaliedXPos * _RecordMaxTime / 360f) + "s ";
 
-            
+            float maxValue = 0f;
+            for (int j = 0; j < _GraphLoaded._PropertiesData.Count(); j++)
+            {
+                if (!_ViewPropertyGraph[j]) continue;
+                if (_GraphMaxValue[j] >= maxValue) maxValue = _GraphMaxValue[j];
+            }
+
             for (int j = 0; j < _GraphLoaded._PropertiesData.Count(); j++)
             {
                 if (!_ViewPropertyGraph[j]) continue;
@@ -226,7 +236,7 @@ public class PropertyRecorderWindow : EditorWindow
                 for (int i = 0; i < dataCount; i += step)
                 {
                     int index = i / step;
-                    float normalizedValue = Mathf.InverseLerp(_GraphMinValue, _GraphMaxValue[j], data._KeyframeValue[i]);
+                    float normalizedValue = Mathf.InverseLerp(_GraphMinValue, maxValue, data._KeyframeValue[i]);
                     //float xPos = (i / (float)(dataValues.Length - 1)) * (_GraphWidth - 20f);
                     float xPos = index * caseWidth;
                     float yPos = 10f + _GraphHeight - (normalizedValue * (_GraphHeight - 20f));
@@ -261,6 +271,26 @@ public class PropertyRecorderWindow : EditorWindow
     private List<PropertyInfo> _PropertyInfo = new List<PropertyInfo>();
     private List<Component> _ComponentAttached = new List<Component>();
 
+    private void DebugAllPropetiesContains()
+    {
+        if (_Source == null) return;
+
+            GameObject obj = _Source as GameObject;
+            if (obj != null)
+            {
+                Component c = obj.GetComponent(_ComponentName);
+                Type type = c.GetType();
+                
+                PropertyInfo[] allProperties = type.GetProperties();
+
+                foreach (var p in allProperties)
+                {
+                    Debug.Log("Contain : " + c.GetType() + " p : " + p.Name);
+                }
+                
+            }
+    }
+    
     private bool SelectVariable()
     {
         if (_Source == null) return false;
