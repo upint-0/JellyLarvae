@@ -16,6 +16,8 @@ public class BaseEnemy : MonoBehaviour
     
     [Header("Level Renderer")] 
     [SerializeField] private SpriteRenderer _LevelSpriteRenderer;
+    [SerializeField] private GameObject _flagella;
+    private ParticleSystem.MainModule _flagellaMain;
     [SerializeField, ColorUsage(false, true)] private Color _LevelUpperColor = Color.red;
     [SerializeField, ColorUsage(false, true)] private Color _LevelLowerColor = Color.blue;
     protected PlayerEntity _PlayerRef;
@@ -34,6 +36,11 @@ public class BaseEnemy : MonoBehaviour
         _PlayerRef = GameManager._Instance._Player;
         EnemyManager._Instance.AddEnemy(this);
 
+        if (_flagella != null)
+        {
+            _flagellaMain = _flagella.GetComponent<ParticleSystem>().main;
+        }
+
     }
     
 
@@ -41,6 +48,11 @@ public class BaseEnemy : MonoBehaviour
     {
         if (!_LevelSpriteRenderer) return;
         _LevelSpriteRenderer.color = (PlayerLevelChecking()) ? _LevelUpperColor: _LevelLowerColor;
+        
+        if (_flagella != null)
+        {
+            _flagellaMain.startColor = new ParticleSystem.MinMaxGradient(PlayerLevelChecking() ? _LevelUpperColor : _LevelLowerColor);
+        }
     }
 
     protected bool PlayerLevelChecking()
