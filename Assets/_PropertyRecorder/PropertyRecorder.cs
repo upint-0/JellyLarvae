@@ -27,11 +27,17 @@ public class PropertyRecorder : MonoBehaviour
     }
     public static GraphData DecompressGraphDataJson(Object obj)
     {
+        #if UNITY_EDITOR
         string filePath = AssetDatabase.GetAssetPath(obj);
         //string absolutePath = Application.persistentDataPath + filePath;
         string serializedData = System.IO.File.ReadAllText(filePath);
         GraphData data = JsonUtility.FromJson<GraphData>(serializedData);
         return data;
+        #endif
+        #if !UNITY_EDITOR
+        GraphData data = new GraphData();
+        return data;
+        #endif
     }
 }
 
