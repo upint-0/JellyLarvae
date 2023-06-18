@@ -43,7 +43,7 @@ public class BaseEnemy : MonoBehaviour
         _LevelSpriteRenderer.color = (PlayerLevelChecking()) ? _LevelUpperColor: _LevelLowerColor;
     }
 
-    private bool PlayerLevelChecking()
+    protected bool PlayerLevelChecking()
     {
         return (_PlayerRef.CurrentLevel <= _Level);
     }

@@ -14,8 +14,11 @@ public class EnemyAttributesSO : ScriptableObject
     [SerializeField] private int _Point;
     [SerializeField] private int _Damage;
 
+    [FormerlySerializedAs("minMinSpeed")]
+    [FormerlySerializedAs("_Speed")]
     [Header("Movements")]
-    [SerializeField] private float _Speed = 10f;
+    [SerializeField] private float _MinSpeed = 450f;
+    [SerializeField] private float _MaxSpeed = 550f;
     [SerializeField] private float _AngularSpeed = 20f;
 
     [Header("Detection")] 
@@ -30,7 +33,8 @@ public class EnemyAttributesSO : ScriptableObject
     public int Point => _Point;
     public int Damage => _Damage;
     
-    public float Speed => _Speed;
+    public float MinSpeed => _MinSpeed;
+    public float MaxSpeed => _MaxSpeed;
     public float AngularSpeed => _AngularSpeed;
     public float RangePlayerDetection => _RangePlayerDetection;
     public float RangeObstacleDetection => _RangeObstacleDetection;

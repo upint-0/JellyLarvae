@@ -16,10 +16,11 @@ MonoBehaviour:
   _MaxBaseLevel: 8
   _Point: 1
   _Damage: 2
-  _Speed: 450
+  _MinSpeed: 450
+  _MaxSpeed: 550
   _AngularSpeed: 5
-  _RangePlayerDetection: 4
-  _RangeObstacleDetection: 3
+  _RangePlayerDetection: 3.8
+  _RangeObstacleDetection: 2
   _ObstaclesLayer:
     serializedVersion: 2
     m_Bits: 128

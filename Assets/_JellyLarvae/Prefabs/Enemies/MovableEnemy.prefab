@@ -86,10 +86,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyAttributes: {fileID: 11400000, guid: 7da84da21408da543b11bb48899e4323, type: 2}
+  _Level: 0
+  _CurrentDamage: 0
+  _TypeID: 0
   _LevelSpriteRenderer: {fileID: 5563433510621718298}
   _LevelUpperColor: {r: 2.297397, g: 0, b: 0, a: 1}
   _LevelLowerColor: {r: 0, g: 2.0090961, b: 2.297397, a: 1}
-  _Type: 0
+  _Type: 1
+  _IsAffectedByJelly: 1
   _JellyGravity: 0
   _WorldGravity: 5
 --- !u!1 &1516824465884770687

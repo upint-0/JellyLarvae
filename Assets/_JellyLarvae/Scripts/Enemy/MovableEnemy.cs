@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Random = UnityEngine.Random;
@@ -11,15 +12,29 @@ public enum E_MovableEnemyType
     TrackAndAvoid,
     Avoid
 }
+
+public enum E_EnemyState
+{
+    Track,
+    RandomWalk, 
+    AvoidPlayer,
+    Death
+}
 [RequireComponent(typeof(Rigidbody2D))]
 public class MovableEnemy : BaseEnemy
 {
     [SerializeField] private E_MovableEnemyType _Type;
+    private E_EnemyState _CurrentState = E_EnemyState.Track;
     
     private Rigidbody2D _Rigidbody;
 
     private bool _AvoidObstacle;
     private bool _DirToLeft;
+    private float _Speed;
+    private float _DistToPlayer;
+    private Vector2 _DirToPlayer;
+    private Vector2 _CurrentDir;
+    
 
     [SerializeField] private bool _IsAffectedByJelly = true;
     [SerializeField] private float _JellyGravity = 1;
@@ -29,7 +44,8 @@ public class MovableEnemy : BaseEnemy
     {
         base.Start();
         _Rigidbody = GetComponent<Rigidbody2D>();
-        
+        _Speed = Random.Range(_enemyAttributes.MinSpeed, _enemyAttributes.MaxSpeed);
+        // Setup the jelly reader to the buffer of the compute shader 
         if(_IsAffectedByJelly)JellySurfaceDetection._Instance.AddJellyReader(
             GetInstanceID(), 
             transform.position, 
@@ -41,6 +57,7 @@ public class MovableEnemy : BaseEnemy
     protected override void Death()
     {
         if(_IsAffectedByJelly) JellySurfaceDetection._Instance.RemoveJellyReader(GetInstanceID());
+        SwitchState(E_EnemyState.Death);
         base.Death();
     }
     
@@ -51,37 +68,55 @@ public class MovableEnemy : BaseEnemy
     }
     private void FixedUpdate()
     {
-        //_AvoidObstacle = DetectObstacles();
-        //if (!_AvoidObstacle)
+        if (_CurrentState == E_EnemyState.Death) return;
         if (_IsAffectedByJelly)
         {
             _Rigidbody.gravityScale = JellySurfaceDetection._Instance.GetJellyValue(GetInstanceID()) > 0.1f
                 ? _JellyGravity
                 : _WorldGravity;
         }
+        GetDirectionToPlayer();
         
-
+        switch (_Type)
         {
-            switch (_Type)
-            {
-                case E_MovableEnemyType.Track:
-                    TrackPlayer();
-                    break;
-                case E_MovableEnemyType.Avoid:
-                    AvoidPlayer();
-                    break;
-                case E_MovableEnemyType.TrackAndAvoid:
-                    if (_PlayerRef.CurrentLevel > _enemyAttributes.MinLevel)
-                    {
-                        AvoidPlayer();
-                    }
-                    else
-                    {
+            case E_MovableEnemyType.Track:
+                TrackPlayer();
+                break;
+            case E_MovableEnemyType.Avoid:
+                AvoidPlayer();
+                break;
+            case E_MovableEnemyType.TrackAndAvoid:
+                // Level Difference 
+                if (!PlayerLevelChecking())
+                {
+                    if(_CurrentState == E_EnemyState.Track) SwitchState(E_EnemyState.RandomWalk);
+                }
+                else
+                {
+                    SwitchState(E_EnemyState.Track);
+                }
+                
+                switch (_CurrentState)
+                {
+                    case E_EnemyState.Track:
                         TrackPlayer();
-                    }
-
-                    break;
-            }
+                        break;
+                    case E_EnemyState.AvoidPlayer :
+                        AvoidPlayer();
+                        if (_DistToPlayer > _enemyAttributes.RangePlayerDetection)
+                        {
+                            SwitchState(E_EnemyState.RandomWalk);
+                        }
+                        break;
+                    case E_EnemyState.RandomWalk :
+                        RandomWalk();
+                        if (_DistToPlayer <= _enemyAttributes.RangePlayerDetection)
+                        {
+                            SwitchState(E_EnemyState.AvoidPlayer);
+                        }
+                        break;
+                }
+                break;
         }
         /*else
         {
@@ -93,14 +128,59 @@ public class MovableEnemy : BaseEnemy
         }*/
     }
 
+    public void SwitchState(E_EnemyState newState)
+    {
+        if (newState == _CurrentState) return;
+        ExitPreviousState();
+        _CurrentState = newState;
+        EnterInNewState();
+    }
+
+    private void EnterInNewState()
+    {
+        switch (_CurrentState)
+        {
+            case E_EnemyState.Track:
+                break;
+            case E_EnemyState.AvoidPlayer :
+                break;
+            case E_EnemyState.RandomWalk :
+                _CurrentDir = Random.insideUnitCircle.normalized;
+                break;
+            case E_EnemyState.Death : 
+                break;
+        }
+    }
+
+    private void ExitPreviousState()
+    {
+        switch (_CurrentState)
+        {
+            case E_EnemyState.Track:
+                break;
+            case E_EnemyState.AvoidPlayer :
+                break;
+            case E_EnemyState.RandomWalk :
+                break;
+            case E_EnemyState.Death : 
+                break;
+        }
+    }
+
     private void TrackPlayer()
     {
-       HandleMovement(GetDirectionToPlayer());
+       HandleMovement(_DirToPlayer);
     }
 
     private void AvoidPlayer()
     {
-        HandleMovement(-GetDirectionToPlayer());
+        HandleMovement(-_DirToPlayer);
+    }
+
+    private void RandomWalk()
+    {
+        if (DetectObstacles()) _CurrentDir =  Random.insideUnitCircle.normalized;
+        HandleMovement(_CurrentDir);
     }
 
     private bool DetectObstacles()
@@ -122,10 +202,11 @@ public class MovableEnemy : BaseEnemy
         return false;
     }
 
-    private Vector2 GetDirectionToPlayer()
+    private void GetDirectionToPlayer()
     {
-        Vector2 dirToPlayer = (_PlayerRef.transform.position - transform.position ).normalized;
-        return dirToPlayer;
+        Vector2 vecToPlayer = (_PlayerRef.transform.position - transform.position);
+        _DistToPlayer = vecToPlayer.magnitude;
+        _DirToPlayer =  vecToPlayer.normalized;
     }
 
     private void HandleMovement(Vector2 targetDir)
@@ -135,7 +216,15 @@ public class MovableEnemy : BaseEnemy
         float z_rotation = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0.0f, 0.0f, z_rotation);
         
-        _Rigidbody.AddForce(transform.right * Time.fixedDeltaTime * _enemyAttributes.Speed, ForceMode2D.Force);
+        _Rigidbody.AddForce(transform.right * Time.fixedDeltaTime * _Speed, ForceMode2D.Force);
     }
-    
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        var position = transform.position;
+        Gizmos.DrawWireSphere(position, _enemyAttributes.RangePlayerDetection);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(position, position + (_DirToPlayer.toVec3() * _DistToPlayer));
+    }
 }
