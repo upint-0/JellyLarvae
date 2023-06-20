@@ -53,6 +53,7 @@ float deltaTime;
 #define BLUR_SAMPLE 10
 #define EAT_STRENGTH 300
 #define WRITE_STRENGTH 4
+#define TWO_PI 6.28318530718
 
 [numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
@@ -66,6 +67,30 @@ float GetMaskValue(float value)
 }
 float BlurObstacle(int2 id)
 {
+    /*float direction = 16.0;
+    float quality = 3.0;
+    float size = 64;
+
+    float2 radius = size / _TextureSize.xy;
+    float2 uv = id / _TextureSize;
+
+    float baseValue =GetMaskValue(_ObstaclesMask[id]);
+    float cValue = baseValue;
+
+    for (float d=0.0; d < TWO_PI; d+= (TWO_PI/direction))
+    {
+        for(float i=(1.0/quality); i<= 1; i+= (1/quality))
+        {
+            cValue += _ObstaclesMask[id + float2(cos(d), sin(d)) * radius * i].x;
+        }
+    }
+
+    cValue /= quality * direction - 15;
+
+    //return cValue;
+    return max(baseValue, cValue);*/
+
+    
     float value = 0;
 
     for(int i = 0; i < BLUR_SAMPLE; i++)
@@ -90,8 +115,8 @@ void CSRemoveJellyByMask(uint3 id : SV_DispatchThreadID)
 {
     float2 value = _JellyMaskSource[id.xy];
 
-    float obstacle = 1 - BlurObstacle(id.xy);
-    value = float2(min(value.x, obstacle), 1 - obstacle);
+    float obstacle = BlurObstacle(id.xy);
+    value = float2(saturate(value.x - obstacle), obstacle);
     
     _JellyMask[id.xy] = value;
 }

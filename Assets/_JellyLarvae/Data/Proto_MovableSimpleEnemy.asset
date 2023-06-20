@@ -24,4 +24,4 @@ MonoBehaviour:
   _ObstaclesLayer:
     serializedVersion: 2
     m_Bits: 128
-  _IsEatingJelly: 1
+  _IsEatingJelly: 0

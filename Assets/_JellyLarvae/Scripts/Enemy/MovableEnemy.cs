@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using Random = UnityEngine.Random;
 
 public enum E_MovableEnemyType
@@ -24,27 +19,32 @@ public enum E_EnemyState
 public class MovableEnemy : BaseEnemy
 {
     [SerializeField] private E_MovableEnemyType _Type;
-    private E_EnemyState _CurrentState = E_EnemyState.Track;
+    protected E_EnemyState _CurrentState = E_EnemyState.Track;
     
-    private Rigidbody2D _Rigidbody;
+    protected Rigidbody2D _Rigidbody;
 
     private bool _AvoidObstacle;
     private bool _DirToLeft;
     private float _Speed;
-    private float _DistToPlayer;
-    private Vector2 _DirToPlayer;
-    private Vector2 _CurrentDir;
+    protected float _DistToPlayer;
+    protected Vector2 _DirToPlayer;
+    protected Vector2 _CurrentDir;
     
 
     [SerializeField] private bool _IsAffectedByJelly = true;
-    [SerializeField] private float _JellyGravity = 1;
-    [SerializeField] private float _WorldGravity = 0.05f;
+    [SerializeField] private float _JellyGravity = 0f;
+    [SerializeField] private float _WorldGravity = 5f;
     [Header("Effect")]
     [SerializeField] private GameObject _TrailEffect;
 
     protected override void Start()
     {
         base.Start();
+        Init();
+    }
+
+    protected virtual void Init()
+    {
         _Rigidbody = GetComponent<Rigidbody2D>();
         _Speed = Random.Range(_enemyAttributes.MinSpeed, _enemyAttributes.MaxSpeed);
         // Setup the jelly reader to the buffer of the compute shader 
@@ -71,7 +71,7 @@ public class MovableEnemy : BaseEnemy
         JellySurfaceDetection._Instance.UpdateJellyReaderPosition(GetInstanceID(), transform.position, transform.position);
         base.Update();
     }
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         if (_CurrentState == E_EnemyState.Death) return;
         if (_IsAffectedByJelly)
@@ -91,46 +91,43 @@ public class MovableEnemy : BaseEnemy
                 AvoidPlayer();
                 break;
             case E_MovableEnemyType.TrackAndAvoid:
-                // Level Difference 
-                if (!PlayerLevelChecking())
-                {
-                    if(_CurrentState == E_EnemyState.Track) SwitchState(E_EnemyState.RandomWalk);
-                }
-                else
-                {
-                    SwitchState(E_EnemyState.Track);
-                }
+               TrackAndAvoidBehaviour();
+                break;
+        }
+    }
+
+    protected virtual void TrackAndAvoidBehaviour()
+    {
+        // Level Difference 
+        if (!PlayerLevelChecking())
+        {
+            if(_CurrentState == E_EnemyState.Track) SwitchState(E_EnemyState.RandomWalk);
+        }
+        else
+        {
+            SwitchState(E_EnemyState.Track);
+        }
                 
-                switch (_CurrentState)
+        switch (_CurrentState)
+        {
+            case E_EnemyState.Track:
+                TrackPlayer();
+                break;
+            case E_EnemyState.AvoidPlayer :
+                AvoidPlayer();
+                if (_DistToPlayer > _enemyAttributes.RangePlayerDetection)
                 {
-                    case E_EnemyState.Track:
-                        TrackPlayer();
-                        break;
-                    case E_EnemyState.AvoidPlayer :
-                        AvoidPlayer();
-                        if (_DistToPlayer > _enemyAttributes.RangePlayerDetection)
-                        {
-                            SwitchState(E_EnemyState.RandomWalk);
-                        }
-                        break;
-                    case E_EnemyState.RandomWalk :
-                        RandomWalk();
-                        if (_DistToPlayer <= _enemyAttributes.RangePlayerDetection)
-                        {
-                            SwitchState(E_EnemyState.AvoidPlayer);
-                        }
-                        break;
+                    SwitchState(E_EnemyState.RandomWalk);
+                }
+                break;
+            case E_EnemyState.RandomWalk :
+                RandomWalk();
+                if (_DistToPlayer <= _enemyAttributes.RangePlayerDetection)
+                {
+                    SwitchState(E_EnemyState.AvoidPlayer);
                 }
                 break;
         }
-        /*else
-        {
-            Debug.Log("Avoid obstacle");
-            Vector2 dir = (_DirToLeft) ? -transform.up : transform.up;
-            Debug.DrawRay(transform.position,  (dir * 10f).toVec3(), Color.cyan);
-            HandleMovement(dir);
-            // Obstacle behaviour
-        }*/
     }
 
     public void SwitchState(E_EnemyState newState)
@@ -175,17 +172,17 @@ public class MovableEnemy : BaseEnemy
         }
     }
 
-    private void TrackPlayer()
+    protected virtual void TrackPlayer()
     {
        HandleMovement(_DirToPlayer);
     }
 
-    private void AvoidPlayer()
+    protected virtual void AvoidPlayer()
     {
         HandleMovement(-_DirToPlayer);
     }
 
-    private void RandomWalk()
+    protected virtual void RandomWalk()
     {
         if (DetectObstacles()) _CurrentDir =  Random.insideUnitCircle.normalized;
         HandleMovement(_CurrentDir);
@@ -201,7 +198,6 @@ public class MovableEnemy : BaseEnemy
         {
             if (_AvoidObstacle == false)
             {
-                Debug.Log("New dir for avoid");
                 _DirToLeft = (Random.Range(0,2) == 0);
             }
             return true;
@@ -210,7 +206,7 @@ public class MovableEnemy : BaseEnemy
         return false;
     }
 
-    private void GetDirectionToPlayer()
+    protected void GetDirectionToPlayer()
     {
         Vector2 vecToPlayer = (_PlayerRef.transform.position - transform.position);
         _DistToPlayer = vecToPlayer.magnitude;

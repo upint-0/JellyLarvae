@@ -18,9 +18,13 @@ public class BaseEnemy : MonoBehaviour
     [SerializeField] private SpriteRenderer _LevelSpriteRenderer;
     [SerializeField] private GameObject _flagella;
     private ParticleSystem.MainModule _flagellaMain;
+    [SerializeField] private ParticleSystem _ChangeLevelEffect;
+    private ParticleSystem.MainModule _ChangeLevelEffectMain;
     [SerializeField, ColorUsage(false, true)] private Color _LevelUpperColor = Color.red;
     [SerializeField, ColorUsage(false, true)] private Color _LevelLowerColor = Color.blue;
     protected PlayerEntity _PlayerRef;
+
+    private bool _IsMorePowerfull = true;
 
     private void Awake()
     {
@@ -40,7 +44,10 @@ public class BaseEnemy : MonoBehaviour
         {
             _flagellaMain = _flagella.GetComponent<ParticleSystem>().main;
         }
-
+        if (_ChangeLevelEffect != null)
+        {
+            _ChangeLevelEffectMain = _ChangeLevelEffect.main;
+        }
     }
     
 
@@ -57,7 +64,18 @@ public class BaseEnemy : MonoBehaviour
 
     protected bool PlayerLevelChecking()
     {
-        return (_PlayerRef.CurrentLevel <= _Level);
+        bool isBetter = (_PlayerRef.CurrentLevel <= _Level);
+        if(_IsMorePowerfull != isBetter)  ChangeLevelEffect();
+        _IsMorePowerfull = isBetter;
+        return isBetter;
+    }
+
+    protected virtual void ChangeLevelEffect()
+    {
+        /*if(_ChangeLevelEffect == null) return;
+        _ChangeLevelEffectMain.startColor = new ParticleSystem.MinMaxGradient(PlayerLevelChecking() ? _LevelUpperColor : _LevelLowerColor);
+        _ChangeLevelEffect.Play();*/
+        //var ps = Instantiate(_ChangeLevelEffect, transform.position, Quaternion.identity) as ParticleSystem;
     }
 
     protected virtual void Death()

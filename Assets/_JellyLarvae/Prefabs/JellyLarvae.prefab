@@ -135,7 +135,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9729bbc2c66b5f149af967207ed67e84, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AngularSpeed: 5
   _Speed: 36
-  _RangeObstacleDetection: 4
+  _RangeObstacleDetection: 3
   _ObstaclesLayer:
     serializedVersion: 2
     m_Bits: 128

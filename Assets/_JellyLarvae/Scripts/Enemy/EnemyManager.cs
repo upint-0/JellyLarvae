@@ -74,6 +74,8 @@ public class EnemyManager : MonoBehaviour
                 {
                     int numberOfEnemyToSpawn = Mathf.CeilToInt(_EnemiesBaseWave[i]._Number * _CurrentNumberPercentProgression);
                     numberOfEnemyToSpawn = Mathf.Min(_EnemiesBaseWave[i]._MaxNumberAlive - _EnemyCounterByType[i], numberOfEnemyToSpawn);
+
+                    if (numberOfEnemyToSpawn < _EnemiesBaseWave[i]._MinSpaceToSpawn) continue;
                     
                     _EnemiesCurrentWave[i]._Number = numberOfEnemyToSpawn;
 

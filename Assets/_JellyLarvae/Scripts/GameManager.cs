@@ -135,6 +135,14 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    private void OnApplicationQuit()
+    {
+        #if !UNITY_EDITOR 
+        Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSdNVYmgBJIffmGBuIJL6nbRF7qmQmwdszhgK3eWsi0UYkip5w/viewform");
+        #endif
+    }
+
     private void GameOver()
     {
         Time.timeScale = 0f;

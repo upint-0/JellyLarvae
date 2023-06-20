@@ -334,6 +334,7 @@ public class JellyRenderer : MonoBehaviour
             (int) _MainKernelGroupeSize.z);
         
         SaveMap(true);
+        OnDisable();
     }
 
 

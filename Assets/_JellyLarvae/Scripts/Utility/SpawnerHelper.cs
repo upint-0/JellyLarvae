@@ -40,6 +40,7 @@ public class SpawnerHelper : MonoBehaviour
         [HideInInspector] public int _TypeID;
         public Collider2D _Collider;
         public int _Number;
+        public int _MinSpaceToSpawn;
         public int _MaxNumberAlive;
         [Space] 
         public int _LevelStepToIncreaseDamage;

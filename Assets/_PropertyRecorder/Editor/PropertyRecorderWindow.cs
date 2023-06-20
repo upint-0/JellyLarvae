@@ -5,9 +5,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Unity.EditorCoroutines.Editor;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -44,6 +42,11 @@ public class PropertyRecorderWindow : EditorWindow
     }
 
     private void CreateGUI()
+    {
+        Init();
+    }
+
+    private void Awake()
     {
         Init();
     }
@@ -114,7 +117,7 @@ public class PropertyRecorderWindow : EditorWindow
                 _AddPropertyToRecordPanel = true;
             }
         }
-
+        
         if (_AddPropertyToRecordPanel)
         {
             EditorGUI.BeginChangeCheck();
@@ -124,10 +127,7 @@ public class PropertyRecorderWindow : EditorWindow
                 GetAllComponent();
             }
 
-            //_ComponentName = GraphStyle.CreateTextField(ref _ComponentName,"Component Name");
-            //_FieldName = GraphStyle.CreateTextField(ref _FieldName, "Property Name");
-
-            if (_PropertySelector._Components != null && _PropertySelector._Components.Length > 0)
+            if (_PropertySelector._Components is { Length: > 0 })
             {
                 EditorGUI.BeginChangeCheck();
                 _PropertySelector._ComponentIndex =
@@ -164,19 +164,9 @@ public class PropertyRecorderWindow : EditorWindow
             {
                 _PropertyFinded = SelectVariable();
             }
-
-            if (_PropertyFinded)
-            {
-                GUILayout.Label("Property is valid");
-
-            }
-            else
-            {
-                GUILayout.Label("Property Not Finded");
-            }
         }
 
-        
+
         GUILayout.Space(10f);
         _TimeStep = GraphStyle.CreateFloatField(ref _TimeStep, "Time step");
         GUILayout.Space(10f);
@@ -197,7 +187,7 @@ public class PropertyRecorderWindow : EditorWindow
             if (GUILayout.Button("Stop Record"))
             {
                 _Record = false;
-                StopCoroutine();
+                StopRecord();
             }
         }
         GUILayout.Space(100f);
@@ -248,7 +238,6 @@ public class PropertyRecorderWindow : EditorWindow
     {
         Debug.Log("Load data");
         _GraphLoaded = PropertyRecorder.DecompressGraphDataJson(_GraphObjectLoaded);
-        //_DataValues = _GraphLoaded._KeyframeValue.ToArray();
         _GraphMaxValue = new float[_GraphLoaded._PropertiesData.Count];
         for (int y = 0; y < _GraphMaxValue.Count(); y++)
         {
@@ -355,7 +344,7 @@ public class PropertyRecorderWindow : EditorWindow
 
     private void GetAllProperties()
     {
-        if(_PropertySelector._Components == null) return;
+        if(_PropertySelector._Components is not { Length: > 0 }) return;
 
         Component c = _PropertySelector._Components[_PropertySelector._ComponentIndex];
         Type type = c.GetType();
@@ -364,27 +353,7 @@ public class PropertyRecorderWindow : EditorWindow
             .ToArray();
         _PropertySelector._PropertyAvailableName = _PropertySelector._PropertyAvailable.Select(property => property.ToString()).ToArray();
     }
-    private void DebugAllPropetiesContains()
-    {
-        if (_Source == null) return;
 
-        GetAllComponent();
-            GameObject obj = _Source as GameObject;
-            if (obj != null)
-            {
-                Component c = obj.GetComponent(_ComponentName);
-                Type type = c.GetType();
-                
-                PropertyInfo[] allProperties = type.GetProperties();
-
-                foreach (var p in allProperties)
-                {
-                    Debug.Log("Contain : " + c.GetType() + " p : " + p.Name);
-                }
-                
-            }
-    }
-    
     private bool SelectVariable()
     {
         if (_Source == null) return false;
@@ -398,53 +367,9 @@ public class PropertyRecorderWindow : EditorWindow
         
         _AddPropertyToRecordPanel = false;
         return true;
-        
-        /*try
-        {
-            GameObject obj = _Source as GameObject;
-            if (obj != null)
-            {
-                Component c = obj.GetComponent(_ComponentName);
-                Type type = c.GetType();
-
-                string exactPropertyName = "";
-                PropertyInfo[] allProperties = type.GetProperties();
-
-                foreach (var p in allProperties)
-                {
-                    if (p.Name.Contains(_FieldName))
-                    {
-                        exactPropertyName = p.Name;
-                    }
-                }
-                PropertyInfo propertyInfo = type.GetProperty(exactPropertyName);
-                
-                if (propertyInfo != null)
-                {
-                    _PropertyInfo.Add(propertyInfo);
-                    _ComponentAttached.Add(c);
-                    Debug.Log("Property finded" + propertyInfo + " " + c);
-                    _AddPropertyToRecordPanel = false;
-                    return true;
-                }
-                else
-                {
-                    Debug.Log("Failed to get property to the type");
-                    return false;
-                }
-            }
-            else
-            {
-                Debug.Log("Failed to get object");
-                return false;
-            }*/
-   /* }
-        catch(Exception e)
-        {
-            Debug.LogError("Can find the variable" + e);
-            return false;
-        }*/
     }
+    
+    #region Record Methods
     private void StartRecord()
     {
         _GraphData = new GraphData();
@@ -455,8 +380,7 @@ public class PropertyRecorderWindow : EditorWindow
         _RecordCoroutine = EditorCoroutineUtility.StartCoroutineOwnerless(
             RecordCoroutine(_GraphData, _TimeStep));
     }
-
-    private void StopCoroutine()
+    private void StopRecord()
     {
         if (_RecordCoroutine != null)
         {
@@ -470,12 +394,6 @@ public class PropertyRecorderWindow : EditorWindow
             PropertyRecorder.SaveGraphToJson(_GraphData, _FilePath,fileName);
         }
     }
-
-    private void OnDisable()
-    { 
-        StopCoroutine();
-    }
-
     private IEnumerator RecordCoroutine(GraphData data,float timeStep)
     {
         while (_Record && _PropertyFinded)
@@ -519,4 +437,11 @@ public class PropertyRecorderWindow : EditorWindow
 
         }
     }
+    #endregion
+    private void OnDisable()
+    { 
+        StopRecord();
+    }
+
+
 }
