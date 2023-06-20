@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Unity.EditorCoroutines.Editor;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Graphs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -25,16 +27,42 @@ public class PropertyRecorderWindow : EditorWindow
     private bool _AddPropertyToRecordPanel;
     private Vector2 _RecordPanelScrollPos;
     private Vector2 _ViewPanelScrollPos;
+
+    #region Style 
+    private GUISkin _GUISkin;
+    private Texture2D _RecordIcon;
+    #endregion
+
+    private PropertySelector _PropertySelector;
+    private bool _IsInit = false;
     
-    [MenuItem("Window/Tool/PropertyRecorder")]
+    [MenuItem("Window/Analysis/Property Recorder")]
     public static void ShowWindow()
     {
         PropertyRecorderWindow wnd = GetWindow<PropertyRecorderWindow>();
         wnd.titleContent = new GUIContent("PropertyRecorderTool");
     }
 
+    private void CreateGUI()
+    {
+        Init();
+    }
+
+    private void Init()
+    {
+        _GUISkin = Resources.Load("Style/PropertyRecorderStyle") as GUISkin;
+        _PropertySelector = new PropertySelector();
+        _IsInit = true;
+    }
+
+    private void OnDestroy()
+    {
+        _IsInit = false;
+    }
+
     private void OnGUI()
     {
+        if(!_IsInit) Init();
         GUILayout.BeginHorizontal();
         DrawRecordPanel();
         DrawViewerPanel();
@@ -49,6 +77,17 @@ public class PropertyRecorderWindow : EditorWindow
     }
 
     private const float _RecordPanelWidth = 400f;
+
+    public struct PropertySelector
+    {
+        public Object _Source;
+        public Component[] _Components;
+        public string[] _ComponentsName;
+        public int _ComponentIndex;
+        public PropertyInfo[] _PropertyAvailable;
+        [CanBeNull] public string[] _PropertyAvailableName;
+        public int _PropertyInfoIndex;
+    }
     private void DrawRecordPanel()
     {
         GUILayout.BeginVertical();
@@ -78,20 +117,52 @@ public class PropertyRecorderWindow : EditorWindow
 
         if (_AddPropertyToRecordPanel)
         {
-            GUILayout.Label("Object to observe : ");
-            _Source = EditorGUILayout.ObjectField(_Source, typeof(Object), true);
-            GUILayout.Label("Component Name : ");
-            _ComponentName = GUILayout.TextField(_ComponentName);
-            GUILayout.Label("Variable Name : ");
-            _FieldName = GUILayout.TextField(_FieldName);
+            EditorGUI.BeginChangeCheck();
+            _Source = EditorGUILayout.ObjectField("GameObject to observe",_Source, typeof(Object), true);
+            if (EditorGUI.EndChangeCheck())
+            {
+                GetAllComponent();
+            }
+
+            //_ComponentName = GraphStyle.CreateTextField(ref _ComponentName,"Component Name");
+            //_FieldName = GraphStyle.CreateTextField(ref _FieldName, "Property Name");
+
+            if (_PropertySelector._Components != null && _PropertySelector._Components.Length > 0)
+            {
+                EditorGUI.BeginChangeCheck();
+                _PropertySelector._ComponentIndex =
+                    EditorGUILayout.Popup("Components", _PropertySelector._ComponentIndex, _PropertySelector._ComponentsName);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    GetAllProperties();
+                    Debug.Log(_PropertySelector._Components[_PropertySelector._ComponentIndex]);
+                }
+
+                if (_PropertySelector._PropertyAvailable != null)
+                {
+                    if (_PropertySelector._PropertyAvailable.Length > 0)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        _PropertySelector._PropertyInfoIndex =
+                            EditorGUILayout.Popup("Property", _PropertySelector._PropertyInfoIndex,
+                                _PropertySelector._PropertyAvailableName);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            // Update property 
+                            Debug.Log(_PropertySelector._PropertyAvailable[_PropertySelector._PropertyInfoIndex]);
+                        }
+                    }
+                    else
+                    {
+                        GUILayout.Label("No properties available ... ");
+                    }
+                }
+
+            }
 
             if (GUILayout.Button("Select Variable"))
             {
                 _PropertyFinded = SelectVariable();
-            }
-            if (GUILayout.Button("Debug all properties"))
-            {
-                DebugAllPropetiesContains();
             }
 
             if (_PropertyFinded)
@@ -107,18 +178,15 @@ public class PropertyRecorderWindow : EditorWindow
 
         
         GUILayout.Space(10f);
-        GUILayout.Label("Time step : ");
-        _TimeStep= EditorGUILayout.FloatField(_TimeStep);
+        _TimeStep = GraphStyle.CreateFloatField(ref _TimeStep, "Time step");
         GUILayout.Space(10f);
-        GUILayout.Label("File path : ");
-        _FilePath = GUILayout.TextField(_FilePath);
-        GUILayout.Label("File name : ");
-        _FileName = GUILayout.TextField(_FileName);
+        _FilePath = GraphStyle.CreateTextField(ref _FilePath, "File path");
+        _FileName = GraphStyle.CreateTextField(ref _FileName, "File name");
         
         GUILayout.Space(10f);
         if (!_Record)
         {
-            if (GUILayout.Button("Start Record"))
+            if (GUILayout.Button("Start Record", GraphStyle.StartRecordButtonStyle(_GUISkin)))
             {
                 _Record = true;
                 StartRecord();
@@ -271,10 +339,36 @@ public class PropertyRecorderWindow : EditorWindow
     private List<PropertyInfo> _PropertyInfo = new List<PropertyInfo>();
     private List<Component> _ComponentAttached = new List<Component>();
 
+    private void GetAllComponent()
+    {
+        if (_Source == null) return;
+
+        GameObject obj = _Source as GameObject;
+        if (obj != null)
+        {
+            _PropertySelector._Components = obj.GetComponents(typeof(Component));
+            _PropertySelector._ComponentsName = _PropertySelector._Components.Select(component => component.GetType().ToString()).ToArray();
+        }
+
+        GetAllProperties();
+    }
+
+    private void GetAllProperties()
+    {
+        if(_PropertySelector._Components == null) return;
+
+        Component c = _PropertySelector._Components[_PropertySelector._ComponentIndex];
+        Type type = c.GetType();
+        _PropertySelector._PropertyAvailable = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(property => property.DeclaringType == c.GetType())
+            .ToArray();
+        _PropertySelector._PropertyAvailableName = _PropertySelector._PropertyAvailable.Select(property => property.ToString()).ToArray();
+    }
     private void DebugAllPropetiesContains()
     {
         if (_Source == null) return;
 
+        GetAllComponent();
             GameObject obj = _Source as GameObject;
             if (obj != null)
             {
@@ -294,7 +388,18 @@ public class PropertyRecorderWindow : EditorWindow
     private bool SelectVariable()
     {
         if (_Source == null) return false;
-        try
+        if (_PropertySelector._PropertyAvailable == null) return false;
+        if (_PropertySelector._PropertyAvailable.Length <= 0) return false;
+        
+        _PropertyInfo.Add(_PropertySelector._PropertyAvailable[_PropertySelector._PropertyInfoIndex]);
+        _ComponentAttached.Add(_PropertySelector._Components[_PropertySelector._ComponentIndex]);
+        _PropertySelector = new PropertySelector();
+        _Source = null;
+        
+        _AddPropertyToRecordPanel = false;
+        return true;
+        
+        /*try
         {
             GameObject obj = _Source as GameObject;
             if (obj != null)
@@ -332,13 +437,13 @@ public class PropertyRecorderWindow : EditorWindow
             {
                 Debug.Log("Failed to get object");
                 return false;
-            }
-        }
+            }*/
+   /* }
         catch(Exception e)
         {
             Debug.LogError("Can find the variable" + e);
             return false;
-        }
+        }*/
     }
     private void StartRecord()
     {
