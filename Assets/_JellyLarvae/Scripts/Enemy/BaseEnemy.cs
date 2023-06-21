@@ -18,7 +18,8 @@ public class BaseEnemy : MonoBehaviour
     [SerializeField] private SpriteRenderer _LevelSpriteRenderer;
     [SerializeField] private GameObject _flagella;
     private ParticleSystem.MainModule _flagellaMain;
-    [SerializeField] private ParticleSystem _ChangeLevelEffect;
+    [SerializeField] private GameObject _ChangeLevelEffect;
+    private ParticleSystem _ChangeLevelEffectPS;
     private ParticleSystem.MainModule _ChangeLevelEffectMain;
     [SerializeField, ColorUsage(false, true)] private Color _LevelUpperColor = Color.red;
     [SerializeField, ColorUsage(false, true)] private Color _LevelLowerColor = Color.blue;
@@ -46,7 +47,8 @@ public class BaseEnemy : MonoBehaviour
         }
         if (_ChangeLevelEffect != null)
         {
-            _ChangeLevelEffectMain = _ChangeLevelEffect.main;
+            _ChangeLevelEffectPS = _ChangeLevelEffect.GetComponent(typeof(ParticleSystem)) as ParticleSystem;
+            if (_ChangeLevelEffectPS != null) _ChangeLevelEffectMain = _ChangeLevelEffectPS.main;
         }
     }
     
@@ -72,10 +74,15 @@ public class BaseEnemy : MonoBehaviour
 
     protected virtual void ChangeLevelEffect()
     {
-        /*if(_ChangeLevelEffect == null) return;
-        _ChangeLevelEffectMain.startColor = new ParticleSystem.MinMaxGradient(PlayerLevelChecking() ? _LevelUpperColor : _LevelLowerColor);
-        _ChangeLevelEffect.Play();*/
-        //var ps = Instantiate(_ChangeLevelEffect, transform.position, Quaternion.identity) as ParticleSystem;
+        if (_ChangeLevelEffect != null)
+        {
+            Debug.Log("Play particle system changing");
+            
+            _ChangeLevelEffectMain.startColor =
+                new ParticleSystem.MinMaxGradient(_IsMorePowerfull ? _LevelUpperColor : _LevelLowerColor);
+            
+            _ChangeLevelEffectPS.Play();
+        }
     }
 
     protected virtual void Death()
