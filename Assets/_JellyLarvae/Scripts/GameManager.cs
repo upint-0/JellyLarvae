@@ -28,8 +28,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private KeyCode _RestartKeycode = KeyCode.R;
     [SerializeField] private KeyCode _PauseKeycode = KeyCode.P;
 
+    private int _PartyBestScore;
     private int _BestScore;
     public int BestScore => _BestScore;
+    public int PartyBestScore => _PartyBestScore;
     private bool _IsInit = false;
 
     private void Awake()
@@ -146,10 +148,15 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Time.timeScale = 0f;
+        _Player.gameObject.SetActive(false);
     }
 
     private void OnPlayerLevelChanged(int level)
     {
+        if (level > _PartyBestScore)
+        {
+            _PartyBestScore = level;
+        }
         if (level > _BestScore && _IsInit)
         {
             DataManager._Instance.SaveBestScore(level);
