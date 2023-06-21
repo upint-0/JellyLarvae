@@ -69,7 +69,7 @@ public class UIManager : MonoBehaviour
         {
             case E_GameState.GameOver:
                 _GameOverPanel.SetActive(true);
-                _BestscoreGameOverPanel.text = "Score : " + GameManager._Instance._Player.CurrentLevel + 
+                _BestscoreGameOverPanel.text = "Score : " + GameManager._Instance.PartyBestScore + 
                                                "\n Best score : " + GameManager._Instance.BestScore;
                 break;
             case E_GameState.Paused:

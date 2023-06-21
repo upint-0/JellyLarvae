@@ -29186,10 +29186,50 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1354153250}
     m_Modifications:
+    - target: {fileID: 1199768375, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _PlayerState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: _EatEffect
       value: 
       objectReference: {fileID: 42770281}
+    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 0.8156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.g
+      value: 0.05490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.r
+      value: 0.8666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.b
+      value: 0.8156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.g
+      value: 0.05490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.r
+      value: 0.8666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541772069518304026, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Color.b
+      value: 0.81687504
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541772069518304026, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Color.g
+      value: 0.05322181
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541772069518304026, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Color.r
+      value: 0.8679245
+      objectReference: {fileID: 0}
     - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: Jelly
       value: 
