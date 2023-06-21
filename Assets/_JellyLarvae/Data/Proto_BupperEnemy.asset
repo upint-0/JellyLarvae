@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _MinBaseLevel: 5
   _MaxBaseLevel: 8
-  _Point: 1
+  _Point: 2
   _Damage: 2
   _MinSpeed: 450
   _MaxSpeed: 550

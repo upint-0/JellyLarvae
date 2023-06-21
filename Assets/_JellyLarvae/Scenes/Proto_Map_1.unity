@@ -705,7 +705,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.37
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1644,12 +1644,12 @@ MonoBehaviour:
     _EnemyLevel: 0
     _TypeID: 0
     _Collider: {fileID: 527090875784833851, guid: 6df381871bba82d41bcec5c6a18b40ff, type: 3}
-    _Number: 3
+    _Number: 1
     _MinSpaceToSpawn: 3
     _MaxNumberAlive: 32
-    _LevelStepToIncreaseDamage: 9
-  _NumberProgressionPrecent: 0.285
-  _LevelProgressionPrecent: 0.236
+    _LevelStepToIncreaseDamage: 11
+  _NumberProgressionPrecent: 0.254
+  _LevelProgressionPrecent: 0.226
   _EnemyCounter: 0
 --- !u!1 &230485491
 GameObject:
@@ -1851,7 +1851,7 @@ MonoBehaviour:
     _MinSpaceToSpawn: 0
     _MaxNumberAlive: 5
     _LevelStepToIncreaseDamage: 0
-  _ProgressionPrecentStrenght: 0.125
+  _ProgressionPrecentStrenght: 0.161
 --- !u!1 &258262077
 GameObject:
   m_ObjectHideFlags: 0
@@ -25165,7 +25165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IsUpdating: 0
-  _MaximumReader: 160
+  _MaximumReader: 162
   _MaximumWriter: 16
   _JellyRenderer: {fileID: 1246214785}
 --- !u!1 &1311315423
@@ -28715,6 +28715,7 @@ MonoBehaviour:
     _MaxNumberAlive: 0
     _LevelStepToIncreaseDamage: 0
   _Canvas: {fileID: 2116256680}
+  _SafeRadiusToPlayer: 4
 --- !u!4 &2003267487
 Transform:
   m_ObjectHideFlags: 0
@@ -29248,6 +29249,10 @@ PrefabInstance:
       propertyPath: Jelly
       value: 
       objectReference: {fileID: 1246214785}
+    - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: DebugMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: _playerEffect
       value: 

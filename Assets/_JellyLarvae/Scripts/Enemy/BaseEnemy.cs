@@ -72,15 +72,24 @@ public class BaseEnemy : MonoBehaviour
 
     protected virtual void ChangeLevelEffect()
     {
-        /*if(_ChangeLevelEffect == null) return;
-        _ChangeLevelEffectMain.startColor = new ParticleSystem.MinMaxGradient(PlayerLevelChecking() ? _LevelUpperColor : _LevelLowerColor);
-        _ChangeLevelEffect.Play();*/
+        if(_ChangeLevelEffect == null) return;
+        _ChangeLevelEffectMain.startColor = new ParticleSystem.MinMaxGradient(!_IsMorePowerfull? _LevelUpperColor : _LevelLowerColor);
+        _ChangeLevelEffect.Play();
         //var ps = Instantiate(_ChangeLevelEffect, transform.position, Quaternion.identity) as ParticleSystem;
     }
 
     protected virtual void Death()
     {
         EnemyManager._Instance.RemoveEnemy(_TypeID, this);
+
+        if (_ChangeLevelEffect)
+        {
+            _ChangeLevelEffect.transform.parent = transform.parent;
+            _ChangeLevelEffectMain.stopAction = ParticleSystemStopAction.Destroy;
+            _ChangeLevelEffectMain.startColor = new ParticleSystem.MinMaxGradient(_IsMorePowerfull? _LevelUpperColor : _LevelLowerColor);
+            _ChangeLevelEffect.Play();
+        }
+
         Destroy(gameObject);
     }
     private void OnCollisionEnter2D(Collision2D other)

@@ -13,7 +13,9 @@ public class SpawnerHelper : MonoBehaviour
     
     [SerializeField] private SpawnableAttributes[] _ObjToSpawn;
     [SerializeField] private SpriteRenderer _Canvas;
-
+    [SerializeField, Range(0f,10f)] private float _SafeRadiusToPlayer = 4f;
+    private GameManager _GameManager;
+    private bool _IsInit;
     private void Awake()
     {
         if (_Instance)
@@ -31,7 +33,18 @@ public class SpawnerHelper : MonoBehaviour
     {
         Spawn(_ObjToSpawn, transform, false);
     }
-    
+
+    private void Init()
+    {
+        _GameManager = GameManager._Instance;
+        _IsInit = true;
+    }
+
+    private void OnDisable()
+    {
+        _IsInit = false;
+    }
+
     [Serializable]
     public struct SpawnableAttributes
     {
@@ -44,6 +57,8 @@ public class SpawnerHelper : MonoBehaviour
         public int _MaxNumberAlive;
         [Space] 
         public int _LevelStepToIncreaseDamage;
+
+
         
         public SpawnableAttributes GetCopy()
         {
@@ -68,7 +83,7 @@ public class SpawnerHelper : MonoBehaviour
             return l;
         }
     }
-    
+
     public void SpawnInCanvas(SpawnableAttributes[] attr,Vector2 center, Vector2 size, Transform parent, bool isCollectable)
     {
         int playerLevel = GameManager._Instance._Player.CurrentLevel;
@@ -82,6 +97,8 @@ public class SpawnerHelper : MonoBehaviour
     }
     public void Spawn(SpawnableAttributes[] attr, Transform parent, bool isCollectable)
     {
+        if(!_IsInit) Init();
+        
         int playerLevel = GameManager._Instance._Player.CurrentLevel;
         for (int i = 0; i < attr.Length; i++)
         {
@@ -94,6 +111,7 @@ public class SpawnerHelper : MonoBehaviour
     
     private void TrySpawnObj(SpawnableAttributes obj, Vector2 center, Vector2 size, Transform parent, bool isCollectable, int playerLevel)
     {
+        
         bool isSpawned = false;
         
         const int maxIteration = 50;
@@ -117,8 +135,10 @@ public class SpawnerHelper : MonoBehaviour
             );
             float radius = Mathf.Max(Mathf.Max(col.bounds.size.x, col.bounds.size.y), col.bounds.size.z);;
             
-            bool spaceOccuped = Physics2D.OverlapCircle(rdmPos, radius);
-            if (!spaceOccuped)
+            bool spaceOccupied = Physics2D.OverlapCircle(rdmPos, radius) || 
+                                 (Vector2.Distance(rdmPos, _GameManager._Player.transform.position) < _SafeRadiusToPlayer);
+            
+            if (!spaceOccupied)
             {
 
                 Quaternion randomRot = new Quaternion();
@@ -144,4 +164,5 @@ public class SpawnerHelper : MonoBehaviour
             iteration++;
         }
     }
+    
 }
