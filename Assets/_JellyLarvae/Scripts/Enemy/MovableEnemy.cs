@@ -76,10 +76,21 @@ public class MovableEnemy : BaseEnemy
         if (_CurrentState == E_EnemyState.Death) return;
         if (_IsAffectedByJelly)
         {
-            _Rigidbody.gravityScale = JellySurfaceDetection._Instance.GetJellyValue(GetInstanceID()) > 0.1f
+            bool isInJelly = JellySurfaceDetection._Instance.GetJellyValue(GetInstanceID()) > 0.1f;
+            _Rigidbody.gravityScale = isInJelly
                 ? _JellyGravity
                 : _WorldGravity;
+
+            if (!isInJelly)
+            {
+                _Rigidbody.inertia = 1f;
+            }
         }
+
+        /*if (_Rigidbody.angularVelocity >= 1000f)
+        {
+            Debug.Log("Angular velocity up : " + _Rigidbody.angularVelocity + " name " + gameObject.name + " id " + GetInstanceID() + " pos " + transform.position);
+        }*/
         GetDirectionToPlayer();
         
         switch (_Type)

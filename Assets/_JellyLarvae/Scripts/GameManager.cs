@@ -146,6 +146,7 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Time.timeScale = 0f;
+        _Player.gameObject.SetActive(false);
     }
 
     private void OnPlayerLevelChanged(int level)
