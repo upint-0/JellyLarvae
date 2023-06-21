@@ -613,6 +613,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!198 &42770281 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 9146970229145239039, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+  m_PrefabInstance: {fileID: 2064201175}
+  m_PrefabAsset: {fileID: 0}
 --- !u!84 &64035608
 RenderTexture:
   m_ObjectHideFlags: 0
@@ -24834,76 +24839,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1190932784 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6541772070373060956, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-  m_PrefabInstance: {fileID: 2064201175}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1199768371 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6541772070373060957, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
   m_PrefabInstance: {fileID: 2064201175}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1199768375
+--- !u!114 &1199768375 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 1199768375, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+  m_PrefabInstance: {fileID: 2064201175}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1190932784}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bed209baafdf1d74f87e2f665f98b7c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _PlayerState: 1
-  _PlayerAttributes: {fileID: 11400000, guid: 1cc83799c5d8b7249bb2bb7493dd1f1e, type: 2}
-  _CurrentLevel: 0
-  _PlayerEffect: {fileID: 1199768379}
-  Test: 5
-  _PlayerMvt: {fileID: 1199768382}
---- !u!114 &1199768379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1190932784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c44668d217ae444a9af5555baaabc86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _EnterIntoJellySounds:
-  - {fileID: 8300000, guid: 596ac451ce523eb42a23dceb6044521e, type: 3}
-  - {fileID: 8300000, guid: f2c83d902d46a1e4b9c7f8adc8dda89b, type: 3}
-  - {fileID: 8300000, guid: 777ac1b753720d04f95a64a4c26e94ff, type: 3}
-  - {fileID: 8300000, guid: e025a801d19ecd54897d6cac75377606, type: 3}
-  - {fileID: 8300000, guid: 46796b6ea15cff044a6af337e6c99a4c, type: 3}
-  - {fileID: 8300000, guid: 98b4df20b885f06438f1405353d98af8, type: 3}
-  _EatSounds:
-  - {fileID: 8300000, guid: 17c1dae396e4cb6449f280d325c85263, type: 3}
-  - {fileID: 8300000, guid: 0d72b4a09fb78764497b2c56ffcceaf3, type: 3}
-  - {fileID: 8300000, guid: 0f69f104f8a27074e93024c5084026af, type: 3}
-  - {fileID: 8300000, guid: bfab45370c615284b8cdc6f1e07ea99f, type: 3}
-  - {fileID: 8300000, guid: bb0c9f94423e25a48993b1fb9962e46a, type: 3}
-  - {fileID: 8300000, guid: f32f2f3e6de3fd044a6d947380e2f7ec, type: 3}
-  _DamageSounds:
-  - {fileID: 8300000, guid: 7e0740963b23d804b91f5e6b102ce4e6, type: 3}
-  - {fileID: 8300000, guid: fbc31e9eddb11c94f837b05a5f99fbd7, type: 3}
-  - {fileID: 8300000, guid: 7262455bfdb84704cb57b0e4f825dc2b, type: 3}
-  - {fileID: 8300000, guid: f3abddb27c03ac3489427bc4d97e6da9, type: 3}
-  - {fileID: 8300000, guid: ad6e65590c602b443a75a271eb745374, type: 3}
-  - {fileID: 8300000, guid: 85a6fe584e243844f9a41de9dbbb4e18, type: 3}
---- !u!114 &1199768382 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-  m_PrefabInstance: {fileID: 2064201175}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1190932784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 825a3d1b9a34b324982a752cfb920715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1214387996
@@ -29237,32 +29186,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1354153250}
     m_Modifications:
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Time
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1322866337026021022, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _EatEffect
+      value: 
+      objectReference: {fileID: 42770281}
     - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: Jelly
       value: 
       objectReference: {fileID: 1246214785}
-    - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: DebugMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: _playerEffect
-      value: 
-      objectReference: {fileID: 1199768379}
     - target: {fileID: 6541772070373060956, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6541772070373060956, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6541772070373060957, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
@@ -29656,11 +29589,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7140975780054589711, guid: 680e9a09ce5c0444794ecf88631a0ae8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -21.7
+      value: -24.03
       objectReference: {fileID: 0}
     - target: {fileID: 7140975780054589711, guid: 680e9a09ce5c0444794ecf88631a0ae8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.3
+      value: 8.33
       objectReference: {fileID: 0}
     - target: {fileID: 7140975780054589711, guid: 680e9a09ce5c0444794ecf88631a0ae8, type: 3}
       propertyPath: m_LocalPosition.z

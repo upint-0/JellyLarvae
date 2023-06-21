@@ -6,6 +6,8 @@ using Random = UnityEngine.Random;
 
 public class PlayerEffect : MonoBehaviour
 {
+    [Header("Particle System")] 
+    [SerializeField] private ParticleSystem _EatEffect;
     [Header("Sounds")]
     [SerializeField] private AudioClip[] _EnterIntoJellySounds;
     [SerializeField] private AudioClip[] _EatSounds;
@@ -21,10 +23,12 @@ public class PlayerEffect : MonoBehaviour
 
     public void EnterInJelly()
     {
+        _EatEffect.Play();
         PlaySound(_EnterIntoJellySounds[Random.Range(0, _EnterIntoJellySounds.Length)],0);
     }
     public void ExitOutJelly()
     {
+        _EatEffect.Stop();
         PlaySound(_EnterIntoJellySounds[Random.Range(0, _EnterIntoJellySounds.Length)],0);
     }
     
