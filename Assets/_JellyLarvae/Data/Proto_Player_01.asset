@@ -18,7 +18,7 @@ MonoBehaviour:
   _dashForce: 20
   _dashCoolDown: 1
   _dashSlomoScale: 0.3
-  _dashSlomoTiming: 0.4
+  _dashSlomoTiming: 0.55
   _gravityScale: 5
   _eatOffset: 0.75
   _eatRadius: 60

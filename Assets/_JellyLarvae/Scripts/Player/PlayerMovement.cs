@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -31,7 +32,9 @@ public class PlayerMovement : MonoBehaviour
     public float CurrentMinSpeed => _CurrentMinSpeed.Value;
     public float CurrentMaxSpeed => _CurrentMaxSpeed.Value;
     public float CurrentDashForce => _CurrentDashForce.Value;
-    
+
+    public UnityEvent<bool> OnDash { get; private set; } = new UnityEvent<bool>();
+
     #region JellyLogic
 
     private void EnterJelly()
@@ -92,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
             timer += Time.deltaTime * (1 / PlayerAttributes.DashSlomoScale);
             main_camera.orthographicSize = Mathf.Lerp(
                 base_orthographic_size,
-                6.0f,
+                3.8f,
                 timer / PlayerAttributes.DashSlomoTiming
                 );
             yield return null;
@@ -106,9 +109,13 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Dash()
     {
+        OnDash.Invoke(true);
+
         _rigidbody2D.AddForce(_direction * CurrentDashForce, ForceMode2D.Impulse);
         yield return new WaitForSeconds(PlayerAttributes.DashCoolDown);
         _dashRoutine = null;
+
+        OnDash.Invoke(false);
     }
 
     #endregion
