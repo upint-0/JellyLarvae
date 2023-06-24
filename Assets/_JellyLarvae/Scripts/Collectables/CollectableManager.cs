@@ -35,6 +35,19 @@ public class CollectableManager : MonoBehaviour
         public int _MinLevelDifference;
         public int _MaxNumber;
         [HideInInspector] public int _CurrentNumber;
+
+        public SpawnableAttributes ToSpawnableAttr(int id)
+        {
+            SpawnableAttributes attr = new SpawnableAttributes()
+            {
+                _Collider = _Collider,
+                _Number = _CurrentNumber,
+                _TypeID = id
+            };
+
+
+            return attr;
+        }
     }
     private void Awake()
     {
@@ -53,7 +66,7 @@ public class CollectableManager : MonoBehaviour
             _CollectableCurrentWave[i] = _CollectablesToSpawn[i].GetCopy();
         }
         
-        _CollectableCounterByType = new int[_CollectablesToSpawn.Length];
+        _CollectableCounterByType = new int[_CollectablesToSpawn.Length + _SpecialBonus.Length];
     }
 
     private void OnDisable()
@@ -75,7 +88,8 @@ public class CollectableManager : MonoBehaviour
 
             for (int i = 0; i < _SpecialBonus.Length; i++)
             {
-                if (_SpecialBonus[i]._CurrentNumber < _SpecialBonus[i]._MaxNumber)
+                int typeID = _CollectableCurrentWave.Length + i;
+                if (_CollectableCounterByType[typeID] < _SpecialBonus[i]._MaxNumber)
                 {
                     int playerLevel = GameManager._Instance.GetPlayerLevel();
                     int enemyLevel = EnemyManager._Instance.EnemyLevelAverage;
@@ -83,8 +97,10 @@ public class CollectableManager : MonoBehaviour
                     if (ratio <= _SpecialBonus[i]._LevelDifferencePercent &&
                         _SpecialBonus[i]._MinLevelDifference <= enemyLevel - playerLevel)
                     {
-                        _SpecialBonus[i]._CurrentNumber++;
+                        _CollectableCounterByType[typeID]++;
                         // Spawn special bonus 
+                        
+                        SpawnerHelper._Instance.Spawn(_SpecialBonus[i].ToSpawnableAttr(typeID), transform, true);
                         Debug.Log("Spawn special bonus !");
                     }
                 }

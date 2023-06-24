@@ -16,6 +16,7 @@ public class PlayerEntity : MonoBehaviour
     }
 
     public ValueWrapper<E_PlayerState> _PlayerState;
+    
     [Space]
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
@@ -138,10 +139,24 @@ public class PlayerEntity : MonoBehaviour
 
     private IEnumerator SetTempoBonus(ValueWrapper<float> property, ValueWrapper<E_PlayerState> state, float bonusValue, float time, int id)
     {
-        property.Value = bonusValue;
+        if (property != null)
+        {
+            property.Value = bonusValue;
+        }
+        else
+        {
+            state.Value = E_PlayerState.Invincible;
+        }
         yield return new WaitForSeconds(time);
-        property.Value = property.BaseValue;
-
+        if (property != null)
+        {
+            property.Value = property.BaseValue;
+        }
+        else
+        {
+            state.Value = state.BaseValue;
+        }
+        
         BonusCoroutineDict[id] = null;
         BonusCoroutineDict.Remove(id);
         UIManager._Instance.ActiveDisableBonus(false,id);

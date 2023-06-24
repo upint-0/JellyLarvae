@@ -108,7 +108,18 @@ public class SpawnerHelper : MonoBehaviour
             }
         }
     }
-    
+    public void Spawn(SpawnableAttributes attr, Transform parent, bool isCollectable)
+    {
+        if(!_IsInit) Init();
+        
+        int playerLevel = GameManager._Instance._Player.CurrentLevel;
+
+            for (int j = 0; j < attr._Number; j++)
+            {
+                TrySpawnObj(attr, _Canvas.transform.position, _Canvas.transform.localScale, parent, isCollectable, playerLevel);
+            }
+        
+    }
     private void TrySpawnObj(SpawnableAttributes obj, Vector2 center, Vector2 size, Transform parent, bool isCollectable, int playerLevel)
     {
         
