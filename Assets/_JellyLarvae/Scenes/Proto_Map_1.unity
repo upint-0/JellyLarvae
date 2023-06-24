@@ -613,11 +613,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!198 &42770281 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 9146970229145239039, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-  m_PrefabInstance: {fileID: 2064201175}
-  m_PrefabAsset: {fileID: 0}
 --- !u!84 &64035608
 RenderTexture:
   m_ObjectHideFlags: 0
@@ -1654,7 +1649,7 @@ MonoBehaviour:
     _MaxNumberAlive: 32
     _LevelStepToIncreaseDamage: 11
   _NumberProgressionPrecent: 0.254
-  _LevelProgressionPrecent: 0.226
+  _LevelProgressionPrecent: 0.1
   _EnemyCounter: 0
 --- !u!1 &230485491
 GameObject:
@@ -1857,6 +1852,13 @@ MonoBehaviour:
     _MaxNumberAlive: 5
     _LevelStepToIncreaseDamage: 0
   _ProgressionPrecentStrenght: 0.161
+  _LevelCheckingTick: 5
+  _SpecialBonus:
+  - _Collider: {fileID: 0}
+    _LevelDifferencePercent: 0.6
+    _MinLevelDifference: 20
+    _MaxNumber: 1
+    _CurrentNumber: 0
 --- !u!1 &258262077
 GameObject:
   m_ObjectHideFlags: 0
@@ -2353,6 +2355,68 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &394167961
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1199768371}
+    m_Modifications:
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320973337549181669, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1903415868249197071, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+      propertyPath: m_Name
+      value: PS_DashRecharged
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+--- !u!198 &394167962 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1011858548438589825, guid: 871db6f65be94af44a2842dd51ee6a61, type: 3}
+  m_PrefabInstance: {fileID: 394167961}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &413894259
 GameObject:
   m_ObjectHideFlags: 0
@@ -29193,43 +29257,15 @@ PrefabInstance:
     - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: _EatEffect
       value: 
-      objectReference: {fileID: 42770281}
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.b
-      value: 0.8156863
+      objectReference: {fileID: 2064201176}
+    - target: {fileID: 1322866337026021022, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.g
-      value: 0.05490196
-      objectReference: {fileID: 0}
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.r
-      value: 0.8666667
-      objectReference: {fileID: 0}
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Parameters.colorGradient.key1.b
-      value: 0.8156863
-      objectReference: {fileID: 0}
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Parameters.colorGradient.key1.g
-      value: 0.05490196
-      objectReference: {fileID: 0}
-    - target: {fileID: 466157010555185864, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Parameters.colorGradient.key1.r
-      value: 0.8666667
-      objectReference: {fileID: 0}
-    - target: {fileID: 6541772069518304026, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Color.b
-      value: 0.81687504
-      objectReference: {fileID: 0}
-    - target: {fileID: 6541772069518304026, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Color.g
-      value: 0.05322181
-      objectReference: {fileID: 0}
-    - target: {fileID: 6541772069518304026, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
-      propertyPath: m_Color.r
-      value: 0.8679245
-      objectReference: {fileID: 0}
+    - target: {fileID: 1322866337026021022, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: DashReloadedEffect
+      value: 
+      objectReference: {fileID: 394167962}
     - target: {fileID: 6541772070373060954, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: Jelly
       value: 
@@ -29284,6 +29320,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+--- !u!198 &2064201176 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5306427309340398115, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+  m_PrefabInstance: {fileID: 2064201175}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2075303018
 GameObject:
   m_ObjectHideFlags: 0

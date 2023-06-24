@@ -6,7 +6,8 @@ public class PropertyBonus : CollectableBase
     public enum  E_BonusType
     {
         Speed,
-        Dash
+        Dash, 
+        Invinsibility
     }
     #endregion
     #region Variables
@@ -26,6 +27,9 @@ public class PropertyBonus : CollectableBase
                 break;
             case E_BonusType.Dash:
                 player.CollectPropertyBonus(player._PlayerMvt._CurrentDashForce, _BonusValue, _BonusTime, _BonusType);
+                break;
+            case E_BonusType.Invinsibility:
+                player.CollectPropertyBonus(player._PlayerState, _BonusValue, _BonusTime, _BonusType);
                 break;
         }
         base.Collect();

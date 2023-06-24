@@ -20,8 +20,22 @@ public class CollectableManager : MonoBehaviour
     private float _CurrentPercentProgression = 1f;
     private SpawnableAttributes[] _CollectableCurrentWave;
 
+    [Header("Special")] 
+    [SerializeField, Min(0)] private float _LevelCheckingTick = 5f;
+    [SerializeField] private SpecialBonus[] _SpecialBonus; 
+    
     private int[] _CollectableCounterByType;
     #endregion
+
+    [Serializable]
+    public struct SpecialBonus
+    {
+        public Collider2D _Collider;
+        [Range(0, 1)] public float _LevelDifferencePercent;
+        public int _MinLevelDifference;
+        public int _MaxNumber;
+        [HideInInspector] public int _CurrentNumber;
+    }
     private void Awake()
     {
         if (_Instance)
@@ -42,9 +56,42 @@ public class CollectableManager : MonoBehaviour
         _CollectableCounterByType = new int[_CollectablesToSpawn.Length];
     }
 
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
     private void Start()
     {
         StartCoroutine(WaveCoroutine());
+        StartCoroutine(LevelCheckingForBonusCoroutine());
+    }
+
+    IEnumerator LevelCheckingForBonusCoroutine()
+    {
+        while (_ContinusSpawning)
+        {
+            yield return new WaitForSeconds(_LevelCheckingTick);
+
+            for (int i = 0; i < _SpecialBonus.Length; i++)
+            {
+                if (_SpecialBonus[i]._CurrentNumber < _SpecialBonus[i]._MaxNumber)
+                {
+                    int playerLevel = GameManager._Instance.GetPlayerLevel();
+                    int enemyLevel = EnemyManager._Instance.EnemyLevelAverage;
+                    float ratio = playerLevel / (float)enemyLevel;
+                    if (ratio <= _SpecialBonus[i]._LevelDifferencePercent &&
+                        _SpecialBonus[i]._MinLevelDifference <= enemyLevel - playerLevel)
+                    {
+                        _SpecialBonus[i]._CurrentNumber++;
+                        // Spawn special bonus 
+                        Debug.Log("Spawn special bonus !");
+                    }
+                }
+            }
+
+
+        }
     }
 
     IEnumerator WaveCoroutine()

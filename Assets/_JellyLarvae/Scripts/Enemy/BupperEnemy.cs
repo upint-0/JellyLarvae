@@ -18,6 +18,8 @@ public class BupperEnemy : MovableEnemy
 
     protected override void Death()
     {
+        if(_IsAffectedByJelly) JellySurfaceDetection._Instance.RemoveJellyReader(GetInstanceID());
+        SwitchState(E_EnemyState.Death);
         StopAllCoroutines();
         base.Death();
     }

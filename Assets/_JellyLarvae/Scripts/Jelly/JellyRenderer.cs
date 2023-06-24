@@ -282,6 +282,12 @@ public class JellyRenderer : MonoBehaviour
         int count = jellyReaders.Count;
         
         _JellyReaderBuffer.SetCounterValue((uint) count + 1);
+
+        if (count >= _JellySurfaceDetection._MaximumReader)
+        {
+            Debug.Log(jellyReaders.Values.Count);
+        }
+
         _JellyReaderBuffer.SetData(jellyReaders.Values.ToArray());
 
         _JellyReaderOutBuffer.SetCounterValue((uint) count);

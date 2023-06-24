@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
@@ -6,6 +7,7 @@ using static PropertyBonus;
 
 public class PlayerEntity : MonoBehaviour
 {
+    [Serializable]
     public enum E_PlayerState
     {
         Alive,
@@ -13,7 +15,7 @@ public class PlayerEntity : MonoBehaviour
         Death
     }
 
-    [SerializeField] private E_PlayerState _PlayerState = E_PlayerState.Alive;
+    public ValueWrapper<E_PlayerState> _PlayerState;
     [Space]
     [Expandable, SerializeField] private PlayerAttributesSO _PlayerAttributes;
     [SerializeField] private int _CurrentLevel;
@@ -63,7 +65,7 @@ public class PlayerEntity : MonoBehaviour
     
     public bool InteractWithEnemy(int enemyLevel, int enemyPoint, int damage)
     {
-        switch (_PlayerState)
+        switch (_PlayerState.Value)
         {
             case E_PlayerState.Alive: 
                 if (enemyLevel > _CurrentLevel)
@@ -106,19 +108,35 @@ public class PlayerEntity : MonoBehaviour
         if (BonusCoroutineDict.TryGetValue(id, out c))
         {
             StopCoroutine(c);
-            c = StartCoroutine(SetTempoBonus(property, bonusValue, time, id));
+            c = StartCoroutine(SetTempoBonus(property, null, bonusValue, time, id));
             BonusCoroutineDict[id] = c;
         }
         else
         {
-            c = StartCoroutine(SetTempoBonus(property, bonusValue, time, id));
+            c = StartCoroutine(SetTempoBonus(property, null, bonusValue, time, id));
             BonusCoroutineDict.Add(id, c);
             UIManager._Instance.ActiveDisableBonus(true,id);
         }
-
+    }
+    public void CollectPropertyBonus(ValueWrapper<E_PlayerState> property, float bonusValue, float time, E_BonusType type)
+    {
+        Coroutine c;
+        int id = (int) type;
+        if (BonusCoroutineDict.TryGetValue(id, out c))
+        {
+            StopCoroutine(c);
+            c = StartCoroutine(SetTempoBonus(null, property, bonusValue, time, id));
+            BonusCoroutineDict[id] = c;
+        }
+        else
+        {
+            c = StartCoroutine(SetTempoBonus(null, property, bonusValue, time, id));
+            BonusCoroutineDict.Add(id, c);
+            UIManager._Instance.ActiveDisableBonus(true,id);
+        }
     }
 
-    private IEnumerator SetTempoBonus(ValueWrapper<float> property, float bonusValue, float time, int id)
+    private IEnumerator SetTempoBonus(ValueWrapper<float> property, ValueWrapper<E_PlayerState> state, float bonusValue, float time, int id)
     {
         property.Value = bonusValue;
         yield return new WaitForSeconds(time);

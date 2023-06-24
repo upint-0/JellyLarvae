@@ -146,9 +146,10 @@ public class SpawnerHelper : MonoBehaviour
                 {
                     // Spawn a enemy
                     BaseEnemy enemy = Instantiate<BaseEnemy>(obj._EnemyBase, rdmPos, randomRot.Random2DRotation(), parent);
-                    enemy._Level = obj._EnemyLevel + Random.Range(enemy.EnemyAttr.MinLevel, enemy.EnemyAttr.MaxLevel);
-                    enemy._TypeID = obj._TypeID;
-                    enemy._CurrentDamage += playerLevel / obj._LevelStepToIncreaseDamage;
+                    enemy.Init(obj._EnemyLevel + Random.Range(enemy.EnemyAttr.MinLevel, 
+                        enemy.EnemyAttr.MaxLevel), obj._TypeID, 
+                        playerLevel / obj._LevelStepToIncreaseDamage);
+
                 }
                 else
                 {

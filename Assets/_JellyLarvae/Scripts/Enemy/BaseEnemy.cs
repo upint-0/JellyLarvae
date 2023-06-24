@@ -38,8 +38,9 @@ public class BaseEnemy : MonoBehaviour
     protected virtual void Start()
     {
         _PlayerRef = GameManager._Instance._Player;
-        EnemyManager._Instance.AddEnemy(this);
 
+        
+        
         if (_flagella != null)
         {
             _flagellaMain = _flagella.GetComponent<ParticleSystem>().main;
@@ -48,6 +49,15 @@ public class BaseEnemy : MonoBehaviour
         {
             _ChangeLevelEffectMain = _ChangeLevelEffect.main;
         }
+    }
+
+    public void Init(int level, int typeID, int additionalDamage)
+    {
+        _TypeID = typeID;
+        _Level = level;
+        _CurrentDamage += additionalDamage;
+        
+        EnemyManager._Instance.AddEnemy(this, _TypeID);
     }
     
 

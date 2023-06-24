@@ -109,6 +109,11 @@ public class GameManager : MonoBehaviour
         onChangeGameState?.Invoke(newState);
     }
 
+    public int GetPlayerLevel()
+    {
+        return _Player.CurrentLevel;
+    }
+
     private void EnterInNewGameState()
     {
         switch (_CurrentGameState)  

@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityExtensions;
 using Random = UnityEngine.Random;
 
 public enum E_MovableEnemyType
@@ -31,7 +32,7 @@ public class MovableEnemy : BaseEnemy
     protected Vector2 _CurrentDir;
     
 
-    [SerializeField] private bool _IsAffectedByJelly = true;
+    [SerializeField] protected bool _IsAffectedByJelly = true;
     [SerializeField] private float _JellyGravity = 0f;
     [SerializeField] private float _WorldGravity = 5f;
     [Header("Effect")]
