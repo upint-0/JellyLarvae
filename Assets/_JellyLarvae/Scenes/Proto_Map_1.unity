@@ -29337,6 +29337,70 @@ PrefabInstance:
       propertyPath: _EatEffect
       value: 
       objectReference: {fileID: 2064201176}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _PostProcessVolume
+      value: 
+      objectReference: {fileID: 734387579}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[1]._Effect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[2]._Effect
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[0]._EffectColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[0]._EffectColor.g
+      value: 0.37328386
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[0]._EffectColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[1]._EffectColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[1]._EffectColor.g
+      value: 0.5102247
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[1]._EffectColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[2]._EffectColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[2]._EffectColor.g
+      value: 0.6841278
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[2]._EffectColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[0]._VignettePercent
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[1]._VignettePercent
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199768379, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
+      propertyPath: _ScreenEffects.Array.data[2]._VignettePercent
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1322866337026021022, guid: fc3446c1d4864a547a8f6f7874127604, type: 3}
       propertyPath: m_Enabled
       value: 1

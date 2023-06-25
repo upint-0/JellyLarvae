@@ -2,12 +2,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
+public enum ScreenEffectType
+{
+    Speed,
+    Dash,
+    Invisibility
+}
+[Serializable]
+public struct ScreenEffect
+{
+    public ScreenEffectType _Effect;
+    public Color _EffectColor;
+    [Range(0,1)]public float _VignettePercent;
+}
 public class PlayerEffect : MonoBehaviour
 {
     [Header("Particle System")] 
     [SerializeField] private ParticleSystem _EatEffect;
+
+    [Header("Screen Effect")] 
+    [SerializeField] private Volume _PostProcessVolume; 
+    [SerializeField] private ScreenEffect[] _ScreenEffects;
+    
     [Header("Sounds")]
     [SerializeField] private AudioClip[] _EnterIntoJellySounds;
     [SerializeField] private AudioClip[] _EatSounds;
