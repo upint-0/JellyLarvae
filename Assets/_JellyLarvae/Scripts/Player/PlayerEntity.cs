@@ -106,6 +106,7 @@ public class PlayerEntity : MonoBehaviour
     {
         Coroutine c;
         int id = (int) type;
+        _PlayerEffect.StartScreenEffect(type, time);
         if (BonusCoroutineDict.TryGetValue(id, out c))
         {
             StopCoroutine(c);
@@ -123,6 +124,7 @@ public class PlayerEntity : MonoBehaviour
     {
         Coroutine c;
         int id = (int) type;
+        _PlayerEffect.StartScreenEffect(type, time);
         if (BonusCoroutineDict.TryGetValue(id, out c))
         {
             StopCoroutine(c);
@@ -139,6 +141,7 @@ public class PlayerEntity : MonoBehaviour
 
     private IEnumerator SetTempoBonus(ValueWrapper<float> property, ValueWrapper<E_PlayerState> state, float bonusValue, float time, int id)
     {
+        
         if (property != null)
         {
             property.Value = bonusValue;
