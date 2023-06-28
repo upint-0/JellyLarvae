@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -38,7 +39,7 @@ public class MyBlitFeature : ScriptableRendererFeature
 
         // Gather up and pass any extra information our pass will need.
         // In this case we're getting the camera's color buffer target
-        var cameraColorTargetIdent = renderer.cameraColorTarget;
+        var cameraColorTargetIdent = renderer.cameraColorTargetHandle;
         myRenderPass.Setup(cameraColorTargetIdent);
 
         // Ask the renderer to add our pass.

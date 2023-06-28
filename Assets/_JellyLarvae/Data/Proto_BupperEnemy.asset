@@ -16,6 +16,7 @@ MonoBehaviour:
   _MaxBaseLevel: 8
   _Point: 2
   _Damage: 2
+  _Rdm: {x: 0, y: 59.850376}
   _MinSpeed: 450
   _MaxSpeed: 550
   _AngularSpeed: 6.5

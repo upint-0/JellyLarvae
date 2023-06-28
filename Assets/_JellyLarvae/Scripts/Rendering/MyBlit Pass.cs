@@ -21,9 +21,13 @@ class MyBlitRenderPass : ScriptableRenderPass
 
   // This isn't part of the ScriptableRenderPass class and is our own addition.
   // For this custom pass we need the camera's color target, so that gets passed in.
-  public void Setup(RenderTargetIdentifier cameraColorTargetIdent)
+  /*public void Setup(RenderTargetIdentifier cameraColorTargetIdent)
   {
     this.cameraColorTargetIdent = cameraColorTargetIdent;
+  }*/
+  public void Setup(RenderTargetIdentifier source)
+  {
+    this.cameraColorTargetIdent = source;
   }
 
   // called each frame before Execute, use it to set up things the pass will need

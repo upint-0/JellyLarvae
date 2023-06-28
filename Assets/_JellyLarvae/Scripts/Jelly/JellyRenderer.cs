@@ -15,6 +15,8 @@ using static UnityExtensions;
 public class JellyRenderer : MonoBehaviour
 {
     #region Variables
+
+    public static JellyRenderer _Instance;
     [SerializeField] private Vector2Int _MapSize = Vector2Int.one;
 
     [Header("Paint")]
@@ -97,6 +99,19 @@ public class JellyRenderer : MonoBehaviour
     #endregion
 
     #region Init
+
+    private void Awake()
+    {
+        if (_Instance)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            _Instance = this;
+        }
+    }
+
     private void OnEnable()
     {
         Init();

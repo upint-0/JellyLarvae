@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [Expandable]
     [SerializeField] private PlayerAttributesSO PlayerAttributes = null;
     
-    [SerializeField] private JellyRenderer Jelly = null;
+    private JellyRenderer Jelly = null;
 
     [Header("Debug")] [SerializeField] private bool DebugMode = false;
 
@@ -150,6 +150,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _renderer = GetComponentInChildren<SpriteRenderer>();
+        Jelly = JellyRenderer._Instance;
     }
 
     private void Update()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,7 +14,8 @@ public class EnemyAttributesSO : ScriptableObject
     [SerializeField] private int _MaxBaseLevel;
     [SerializeField] private int _Point;
     [SerializeField] private int _Damage;
-
+    [MinMaxSlider(0, 100)] public Vector2 _Rdm;
+    
     [FormerlySerializedAs("minMinSpeed")]
     [FormerlySerializedAs("_Speed")]
     [Header("Movements")]
