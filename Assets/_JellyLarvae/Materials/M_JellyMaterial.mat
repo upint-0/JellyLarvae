@@ -50,6 +50,6 @@ Material:
     - _VoronoiTiling: 0.025
     m_Colors:
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _JellyColor: {r: 0.29917225, g: 0.764151, b: 0.44814605, a: 1}
+    - _JellyColor: {r: 0.29917222, g: 0.764151, b: 0.44814605, a: 1}
     - _JellyOutlineTint: {r: 0.6497418, g: 0.8773585, b: 0.72162086, a: 1}
   m_BuildTextureStacks: []

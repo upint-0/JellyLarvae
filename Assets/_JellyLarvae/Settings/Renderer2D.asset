@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f3f9c81267258542b36341447727702, type: 3}
   m_Name: MyBlitFeature
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     IsEnabled: 1
     WhenToInsert: 550

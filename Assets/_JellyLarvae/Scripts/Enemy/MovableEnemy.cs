@@ -58,6 +58,7 @@ public class MovableEnemy : BaseEnemy
         
         SwitchState(E_EnemyState.Track);
         _TrailEffect.SetActive(false);
+        // this is a test
     }
 
     protected override void Death()
